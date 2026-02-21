@@ -5,10 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace JuegoDeLoteria.Juego
-{
-    public class FormasdeGanar
-    {
-        public enum FormaDeGanar
+{      
+    public enum FormasDeGanar
         {
             TableroCompleto,
             CualquierFila,
@@ -19,5 +17,4 @@ namespace JuegoDeLoteria.Juego
             FormaDeCruz,
             FormaDeL,
         }
-    }
 }

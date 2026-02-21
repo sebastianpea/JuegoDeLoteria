@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
 namespace JuegoDeLoteria.Juego
 {
@@ -93,7 +88,7 @@ namespace JuegoDeLoteria.Juego
             return sacada;
         }
         public bool HayCartasRestantes() => cartasRestantes.Count > 0;
-        public List <Carta> ObtenerCartasRestantes() => new List<Carta>(cartasRestantes);
+        public List <Carta> ObtenerTodasLasCartas() => new List<Carta>(cartas);
     }
     
 }

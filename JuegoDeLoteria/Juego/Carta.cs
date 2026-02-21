@@ -19,8 +19,5 @@ namespace JuegoDeLoteria.Juego
         {
             return (Image)Resources.ResourceManager.GetObject(Imagen)!;
         }
-
-
-
     }
 }

@@ -4,8 +4,8 @@ namespace JuegoDeLoteria.Juego
 {
     public class MazoDeCartas
     {
-        public List<Carta> cartas;
-        public List<Carta> cartasRestantes;
+        private List<Carta> cartas;
+        private List<Carta> cartasRestantes;
 
         public MazoDeCartas()
         {

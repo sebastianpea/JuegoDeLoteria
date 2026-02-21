@@ -6,15 +6,16 @@ using System.Threading.Tasks;
 
 namespace JuegoDeLoteria.Juego
 {      
-    public enum FormasDeGanar
+    public enum FormasdeGanar
         {
             TableroCompleto,
             CualquierFila,
             CualquierColumna,
             CualquierDiagonal,
+            CualquierFilaColumnaDiagonal,
             CuatroEsquinas,
             CuatroEnElCentro,
-            FormaDeCruz,
+            FormaDeX,
             FormaDeL,
         }
 }

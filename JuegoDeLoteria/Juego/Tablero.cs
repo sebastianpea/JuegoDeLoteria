@@ -1,9 +1,7 @@
 ﻿
-using System.Runtime.CompilerServices;
-
 namespace JuegoDeLoteria.Juego
 {
-    internal class Tablero
+    public class Tablero
     {
         public List<Carta> Cartas { get; private set; }
         public bool[,] Marcado { get; private set; }

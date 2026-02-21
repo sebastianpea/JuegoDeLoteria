@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
+using JuegoDeLoteria.Properties;
 
 namespace JuegoDeLoteria.Juego
 {
@@ -17,6 +14,10 @@ namespace JuegoDeLoteria.Juego
             Id = id;
             Nombre = nombre;
             Imagen = imagen;
+        }
+        public Image ObtenerImagen()
+        {
+            return (Image)Resources.ResourceManager.GetObject(Imagen)!;
         }
 
 

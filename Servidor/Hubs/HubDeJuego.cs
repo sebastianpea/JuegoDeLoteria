@@ -157,5 +157,22 @@ namespace Servidor.Hubs
 
             await Clients.Group(codigoSala).SendAsync("JuegoReiniciado");
         }
+
+        public async Task ObtenerCartasRestantes(string codigoSala)
+        {
+            if (!_salas.ContainsKey(codigoSala)) return;
+
+            Sala sala = _salas[codigoSala];
+
+            List<int> todasLasCartas = sala.Mazo.ObtenerTodasLasCartas()
+                .Select(c => c.Id)
+                .ToList();
+
+            List<int> cartasRestantes = todasLasCartas
+                .Where(id => !sala.CartasMencionadas.Contains(id))
+                .ToList();
+
+            await Clients.Caller.SendAsync("CartasRestantes", cartasRestantes);
+        }
     }
 }

@@ -1,20 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using JuegoDeLoteria.Forms;
 
 namespace JuegoDeLoteria.Controles
 {
     public partial class MenuControl : UserControl
     {
+        public event Action? OnJugar;
+        public event Action? OnConfiguracion;
+        public event Action? OnSalir;
+
         public MenuControl()
         {
             InitializeComponent();
+        }
+
+        private void btnJugar_Click(object sender, EventArgs e)
+        {
+            OnJugar?.Invoke();
+        }
+
+        private void btnConfiguracion_Click(object sender, EventArgs e)
+        {
+            OnConfiguracion?.Invoke();
+        }
+
+        private void btnSalir_Click(object sender, EventArgs e)
+        {
+            OnSalir?.Invoke();
         }
     }
 }

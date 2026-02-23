@@ -8,11 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace JuegoDeLoteria.Forms
+namespace JuegoDeLoteria.Controles
 {
-    public partial class LobbyForm : Form
+    public partial class UnirseControl : UserControl
     {
-        public LobbyForm()
+        public UnirseControl()
         {
             InitializeComponent();
         }

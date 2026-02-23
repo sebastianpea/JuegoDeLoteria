@@ -8,11 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace JuegoDeLoteria.Forms
+namespace JuegoDeLoteria.Controles
 {
-    public partial class DialogoForm : Form
+    public partial class PostJuegoControl : UserControl
     {
-        public DialogoForm()
+        public PostJuegoControl()
         {
             InitializeComponent();
         }

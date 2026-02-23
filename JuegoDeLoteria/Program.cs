@@ -1,17 +1,13 @@
-namespace JuegoDeLoteria
+using JuegoDeLoteria;
+using JuegoDeLoteria.Forms;
+using JuegoDeLoteria.Managers;
+
+AudioManager.CargarPlaylist(new List<string>
 {
-    internal static class Program
-    {
-        /// <summary>
-        ///  The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main()
-        {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
-            ApplicationConfiguration.Initialize();
-            Application.Run(new MenuForm());
-        }
-    }
-}
+    "Musica/cancion1.mp3",
+});
+AudioManager.ReproducirSiguiente();
+
+Application.EnableVisualStyles();
+Application.SetCompatibleTextRenderingDefault(false);
+Application.Run(new MainForm());

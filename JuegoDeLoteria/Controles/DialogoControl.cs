@@ -4,28 +4,25 @@
     {
         public event Action? OnTerminado;
 
-        private List<string> _lineasTutorial = new List<string>
+        private List<string> lineasTutorial = new List<string>
         {
-            "¡Bienvenido a la Lotería!",
-            "Soy tu guía para este juego.",
-            "¿Ya conoces cómo se juega la Lotería?"
+            "hola",
+            "acompañar",
+            "ya sabes como se juega?"
         };
 
-        private List<string> _lineasExplicacion = new List<string>
+        private List<string> lineasExplicacion = new List<string>
         {
-            "La Lotería es un juego de azar.",
-            "Cada jugador tiene un tablero con imágenes.",
-            "El servidor irá llamando cartas una por una.",
-            "Cuando la imagen aparezca en tu tablero, pon una ficha.",
-            "¡El primero en completar el patrón gana!",
-            "¡Buena suerte!"
+            "pues",
+            "que",
+            "wei"
         };
 
-        private int _indiceActual = 0;
-        private bool _mostandoExplicacion = false;
-        private System.Windows.Forms.Timer _timerTexto;
-        private string _textoCompleto = "";
-        private int _indiceLetra = 0;
+        private int indiceActual = 0;
+        private bool mostandoExplicacion = false;
+        private System.Windows.Forms.Timer timerTexto;
+        private string textoCompleto = "";
+        private int indiceLetra = 0;
 
         public DialogoControl()
         {
@@ -33,40 +30,41 @@
             btnSi.Visible = false;
             btnNo.Visible = false;
             btnContinuar.Visible = false;
-            _timerTexto = new System.Windows.Forms.Timer();
-            _timerTexto.Interval = 30;
-            _timerTexto.Tick += TimerTexto_Tick;
+            timerTexto = new System.Windows.Forms.Timer();
+            timerTexto.Interval = 30;
+            timerTexto.Tick += TimerTexto_Tick;
         }
 
         public void IniciarDialogo()
         {
-            _indiceActual = 0;
-            MostrarLinea(_lineasTutorial[_indiceActual]);
+            indiceActual = 0;
+            MostrarLinea(lineasTutorial[indiceActual]);
         }
 
         private void MostrarLinea(string texto)
         {
-            _textoCompleto = texto;
-            _indiceLetra = 0;
+            textoCompleto = texto;
+            indiceLetra = 0;
             lblDialogo.Text = "";
             btnContinuar.Visible = false;
             btnSi.Visible = false;
             btnNo.Visible = false;
-            _timerTexto.Start();
+            timerTexto.Start();
         }
 
         private void TimerTexto_Tick(object? sender, EventArgs e)
         {
-            if (_indiceLetra < _textoCompleto.Length)
+            if (indiceLetra < textoCompleto.Length)
             {
-                lblDialogo.Text += _textoCompleto[_indiceLetra];
-                _indiceLetra++;
+                lblDialogo.Text += textoCompleto[indiceLetra];
+                indiceLetra++;
             }
             else
             {
-                _timerTexto.Stop();
-                // Show the right buttons depending on which line we're on
-                if (!_mostandoExplicacion && _indiceActual == _lineasTutorial.Count - 1)
+                timerTexto.Stop();
+
+                // si estamos mostrando el tutorial y es la última línea, mostramos las opciones
+                if (!mostandoExplicacion && indiceActual == lineasTutorial.Count - 1)
                 {
                     btnSi.Visible = true;
                     btnNo.Visible = true;
@@ -80,12 +78,12 @@
 
         private void btnContinuar_Click(object sender, EventArgs e)
         {
-            _indiceActual++;
-            List<string> lineas = _mostandoExplicacion ? _lineasExplicacion : _lineasTutorial;
+            indiceActual++;
+            List<string> lineas = mostandoExplicacion ? lineasExplicacion : lineasTutorial;
 
-            if (_indiceActual < lineas.Count)
+            if (indiceActual < lineas.Count)
             {
-                MostrarLinea(lineas[_indiceActual]);
+                MostrarLinea(lineas[indiceActual]);
             }
             else
             {
@@ -100,9 +98,9 @@
 
         private void btnNo_Click(object sender, EventArgs e)
         {
-            _mostandoExplicacion = true;
-            _indiceActual = 0;
-            MostrarLinea(_lineasExplicacion[_indiceActual]);
+            mostandoExplicacion = true;
+            indiceActual = 0;
+            MostrarLinea(lineasExplicacion[indiceActual]);
         }
     }
 }

@@ -82,7 +82,6 @@
             Controls.Add(trackBarVolumen);
             Name = "ConfiguracionControl";
             Size = new Size(1404, 751);
-            Load += ConfiguracionControl_Load;
             ((System.ComponentModel.ISupportInitialize)trackBarVolumen).EndInit();
             ResumeLayout(false);
             PerformLayout();

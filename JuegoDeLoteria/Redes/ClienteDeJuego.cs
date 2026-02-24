@@ -11,6 +11,7 @@ namespace JuegoDeLoteria.Redes
         public bool EsHost { get; private set; }
         public string FormaDeGanar { get; private set; } = string.Empty;
         public string NombreJugador { get; private set; } = string.Empty;
+        public int IntervaloSegundos { get; private set; }
 
         public event Action<string, string>? OnJugadorUnido;
         public event Action<string>? OnJugadorSalio;
@@ -94,6 +95,7 @@ namespace JuegoDeLoteria.Redes
 
         public async Task IniciarJuegoAsync(string formaDeGanar, int intervaloSegundos)
         {
+            IntervaloSegundos = intervaloSegundos;
             await _conexion.InvokeAsync("IniciarJuego", CodigoSala, formaDeGanar, intervaloSegundos);
         }
 

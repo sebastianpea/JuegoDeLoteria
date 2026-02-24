@@ -72,7 +72,10 @@ namespace JuegoDeLoteria.Forms
                 this.Invoke(() =>
                 {
                     MostrarControl(juegoControl);
-                    juegoControl.InicializarJuego(MainForm.Cliente.FormaDeGanar, tableros);
+                    juegoControl.InicializarJuego(
+                        MainForm.Cliente.FormaDeGanar,
+                        tableros,
+                        MainForm.Cliente.IntervaloSegundos);
                 });
             };
 

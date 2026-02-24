@@ -11,26 +11,36 @@ namespace JuegoDeLoteria.Controles
         private FormasdeGanar formaDeGanar;
         private PictureBox? fichaArrastrada = null;
         private Point offsetArrastre;
+        private System.Windows.Forms.Timer cuentaRegresiva;
+        private int segundosRestantes;
+        private int intervaloSegundos;
 
         public JuegoControl()
         {
             InitializeComponent();
         }
 
-        public void InicializarJuego(string formaDeGanar, List<Tablero> tableros)
+        public void InicializarJuego(string formaDeGanar, List<Tablero> tableros, int intervaloSegundos)
         {
             if (this.InvokeRequired)
             {
-                this.Invoke(() => InicializarJuego(formaDeGanar, tableros));
+                this.Invoke(() => InicializarJuego(formaDeGanar, tableros, intervaloSegundos));
                 return;
             }
 
             this.tableros = tableros;
             this.formaDeGanar = Enum.Parse<FormasdeGanar>(formaDeGanar);
+            this.intervaloSegundos = intervaloSegundos;
 
             pnlTableros.Controls.Clear();
             flpHistorial.Controls.Clear();
             btnLoteria.Enabled = true;
+            lblCuentaRegresiva.Text = "";
+            lblNombreCartaActual.Text = "Esperando primera carta...";
+
+            cuentaRegresiva = new System.Windows.Forms.Timer();
+            cuentaRegresiva.Interval = 1000;
+            cuentaRegresiva.Tick += CuentaRegresiva_Tick;
 
             DibujarTableros();
             CrearFichas();
@@ -38,6 +48,15 @@ namespace JuegoDeLoteria.Controles
             MainForm.Cliente.OnCartaMencionada += OnCartaMencionada;
             MainForm.Cliente.OnVerificarLoteria += OnVerificarLoteria;
             MainForm.Cliente.OnJuegoTerminado += OnJuegoTerminado_Recibido;
+        }
+
+        private void CuentaRegresiva_Tick(object? sender, EventArgs e)
+        {
+            segundosRestantes--;
+            lblCuentaRegresiva.Text = $"Próxima carta en: {segundosRestantes}s";
+
+            if (segundosRestantes <= 0)
+                cuentaRegresiva.Stop();
         }
 
         private void DibujarTableros()
@@ -147,6 +166,11 @@ namespace JuegoDeLoteria.Controles
                 pbHistorial.SizeMode = PictureBoxSizeMode.Zoom;
                 pbHistorial.Image = carta.ObtenerImagen();
                 flpHistorial.Controls.Add(pbHistorial);
+
+                segundosRestantes = intervaloSegundos;
+                cuentaRegresiva.Stop();
+                cuentaRegresiva.Start();
+                lblCuentaRegresiva.Text = $"Próxima carta en: {segundosRestantes}s";
             });
         }
 
@@ -177,6 +201,7 @@ namespace JuegoDeLoteria.Controles
         {
             this.Invoke(() =>
             {
+                cuentaRegresiva.Stop();
                 MainForm.Cliente.OnCartaMencionada -= OnCartaMencionada;
                 MainForm.Cliente.OnVerificarLoteria -= OnVerificarLoteria;
                 MainForm.Cliente.OnJuegoTerminado -= OnJuegoTerminado_Recibido;

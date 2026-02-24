@@ -9,7 +9,6 @@ namespace JuegoDeLoteria.Controles
 
         private List<Tablero> tableros = new List<Tablero>();
         private FormasdeGanar formaDeGanar;
-        private List<PictureBox> fichasDisponibles = new List<PictureBox>();
         private PictureBox? fichaArrastrada = null;
         private Point offsetArrastre;
 
@@ -25,6 +24,7 @@ namespace JuegoDeLoteria.Controles
 
             pnlTableros.Controls.Clear();
             flpHistorial.Controls.Clear();
+            btnLoteria.Enabled = true;
 
             DibujarTableros();
             CrearFichas();
@@ -41,6 +41,7 @@ namespace JuegoDeLoteria.Controles
                 var panelTablero = new Panel();
                 panelTablero.Width = 220;
                 panelTablero.Height = 220;
+                panelTablero.Margin = new Padding(10);
 
                 for (int fila = 0; fila < tablero.Tamaño; fila++)
                 {
@@ -56,6 +57,7 @@ namespace JuegoDeLoteria.Controles
                         pb.AllowDrop = true;
                         pb.DragEnter += Celda_DragEnter;
                         pb.DragDrop += Celda_DragDrop;
+                        pb.DragOver += Celda_DragOver;
                         panelTablero.Controls.Add(pb);
                     }
                 }
@@ -67,17 +69,14 @@ namespace JuegoDeLoteria.Controles
         private void CrearFichas()
         {
             pnlFichas.Controls.Clear();
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 20; i++)
             {
                 var ficha = new PictureBox();
                 ficha.Size = new Size(40, 40);
                 ficha.BackColor = Color.Gold;
                 ficha.Cursor = Cursors.Hand;
                 ficha.MouseDown += Ficha_MouseDown;
-                ficha.MouseMove += Ficha_MouseMove;
-                ficha.MouseUp += Ficha_MouseUp;
                 pnlFichas.Controls.Add(ficha);
-                fichasDisponibles.Add(ficha);
             }
         }
 
@@ -85,31 +84,17 @@ namespace JuegoDeLoteria.Controles
         {
             if (sender is PictureBox ficha)
             {
-                fichaArrastrada = ficha;
                 offsetArrastre = e.Location;
-                ficha.BringToFront();
                 ficha.DoDragDrop(ficha, DragDropEffects.Move);
             }
         }
 
-        private void Ficha_MouseMove(object? sender, MouseEventArgs e)
-        {
-            if (fichaArrastrada != null && e.Button == MouseButtons.Left)
-            {
-                var pos = fichaArrastrada.PointToScreen(e.Location);
-                pos = this.PointToClient(pos);
-                fichaArrastrada.Location = new Point(
-                    pos.X - offsetArrastre.X,
-                    pos.Y - offsetArrastre.Y);
-            }
-        }
-
-        private void Ficha_MouseUp(object? sender, MouseEventArgs e)
-        {
-            fichaArrastrada = null;
-        }
-
         private void Celda_DragEnter(object? sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Move;
+        }
+
+        private void Celda_DragOver(object? sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.Move;
         }
@@ -118,8 +103,16 @@ namespace JuegoDeLoteria.Controles
         {
             if (sender is PictureBox celda && celda.Tag is (Tablero tablero, int fila, int col))
             {
-                tablero.PonerFicha(fila, col);
-                celda.BackColor = Color.Gold;
+                if (tablero.Marcado[fila, col])
+                {
+                    tablero.QuitarFicha(fila, col);
+                    celda.BackColor = Color.Transparent;
+                }
+                else
+                {
+                    tablero.PonerFicha(fila, col);
+                    celda.BackColor = Color.Gold;
+                }
             }
         }
 
@@ -127,21 +120,15 @@ namespace JuegoDeLoteria.Controles
         {
             this.Invoke(() =>
             {
-                var carta = MainForm.Cliente is not null
-                    ? new Carta(id, nombre, nombre.ToLower().Replace(" ", "_"))
-                    : null;
+                var carta = new Carta(id, nombre, nombre.ToLower().Replace(" ", "_"));
+                pbCartaActual.Image = carta.ObtenerImagen();
+                lblNombreCartaActual.Text = nombre;
 
-                if (carta != null)
-                {
-                    pbCartaActual.Image = carta.ObtenerImagen();
-                    lblNombreCartaActual.Text = nombre;
-
-                    var pbHistorial = new PictureBox();
-                    pbHistorial.Size = new Size(40, 40);
-                    pbHistorial.SizeMode = PictureBoxSizeMode.Zoom;
-                    pbHistorial.Image = carta.ObtenerImagen();
-                    flpHistorial.Controls.Add(pbHistorial);
-                }
+                var pbHistorial = new PictureBox();
+                pbHistorial.Size = new Size(40, 40);
+                pbHistorial.SizeMode = PictureBoxSizeMode.Zoom;
+                pbHistorial.Image = carta.ObtenerImagen();
+                flpHistorial.Controls.Add(pbHistorial);
             });
         }
 
@@ -161,7 +148,10 @@ namespace JuegoDeLoteria.Controles
                 await MainForm.Cliente.EnviarResultadoAsync(esValido);
 
                 if (!esValido)
+                {
                     btnLoteria.Enabled = true;
+                    MessageBox.Show("Tu Lotería no es válida, continúa jugando.");
+                }
             });
         }
 

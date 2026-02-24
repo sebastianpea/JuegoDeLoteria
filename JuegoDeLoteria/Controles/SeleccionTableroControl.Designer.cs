@@ -31,9 +31,9 @@
             nudCantidadTableros = new NumericUpDown();
             btnAleatorio = new Button();
             btnElegirPropio = new Button();
-            pnlSeleccion = new Panel();
             btnConfirmar = new Button();
             lblInstrucciones = new Label();
+            pnlSeleccion = new FlowLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)nudCantidadTableros).BeginInit();
             SuspendLayout();
             // 
@@ -64,13 +64,6 @@
             btnElegirPropio.UseVisualStyleBackColor = true;
             btnElegirPropio.Click += btnElegirPropio_Click;
             // 
-            // pnlSeleccion
-            // 
-            pnlSeleccion.Location = new Point(398, 48);
-            pnlSeleccion.Name = "pnlSeleccion";
-            pnlSeleccion.Size = new Size(546, 520);
-            pnlSeleccion.TabIndex = 3;
-            // 
             // btnConfirmar
             // 
             btnConfirmar.Location = new Point(743, 624);
@@ -90,13 +83,20 @@
             lblInstrucciones.TabIndex = 4;
             lblInstrucciones.Text = "Instrucciones";
             // 
+            // pnlSeleccion
+            // 
+            pnlSeleccion.Location = new Point(326, 26);
+            pnlSeleccion.Name = "pnlSeleccion";
+            pnlSeleccion.Size = new Size(636, 569);
+            pnlSeleccion.TabIndex = 5;
+            // 
             // SeleccionTableroControl
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(pnlSeleccion);
             Controls.Add(lblInstrucciones);
             Controls.Add(btnConfirmar);
-            Controls.Add(pnlSeleccion);
             Controls.Add(btnElegirPropio);
             Controls.Add(btnAleatorio);
             Controls.Add(nudCantidadTableros);
@@ -112,8 +112,8 @@
         private NumericUpDown nudCantidadTableros;
         private Button btnAleatorio;
         private Button btnElegirPropio;
-        private Panel pnlSeleccion;
         private Button btnConfirmar;
         private Label lblInstrucciones;
+        private FlowLayoutPanel pnlSeleccion;
     }
 }

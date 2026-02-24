@@ -9,6 +9,7 @@ namespace JuegoDeLoteria.Redes
 
         public string CodigoSala { get; private set; }
         public bool EsHost { get; private set; }
+        public string FormaDeGanar { get; private set; } = string.Empty;
 
         public event Action<string, string>? OnJugadorUnido;
         public event Action<string>? OnJugadorSalio;
@@ -40,7 +41,10 @@ namespace JuegoDeLoteria.Redes
                 OnJugadorSalio?.Invoke(id));
 
             _conexion.On<string>("JuegoIniciado", (formaDeGanar) =>
-                OnJuegoIniciado?.Invoke(formaDeGanar));
+            {
+                FormaDeGanar = formaDeGanar;
+                OnJuegoIniciado?.Invoke(formaDeGanar);
+            });
 
             _conexion.On<int, string>("CartaMencionada", (id, nombre) =>
                 OnCartaMencionada?.Invoke(id, nombre));

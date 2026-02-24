@@ -5,12 +5,12 @@ namespace JuegoDeLoteria.Controles
 {
     public partial class JuegoControl : UserControl
     {
-        public event Action? OnJuegoTerminado;
+        public event Action<string>? OnJuegoTerminado;
 
-        private List<Tablero> tableros = new List<Tablero>();
-        private FormasdeGanar formaDeGanar;
-        private PictureBox? fichaArrastrada = null;
-        private Point offsetArrastre;
+        private List<Tablero> _tableros = new List<Tablero>();
+        private FormasdeGanar _formaDeGanar;
+        private PictureBox? _fichaArrastrada = null;
+        private Point _offsetArrastre;
 
         public JuegoControl()
         {
@@ -19,8 +19,8 @@ namespace JuegoDeLoteria.Controles
 
         public void InicializarJuego(string formaDeGanar, List<Tablero> tableros)
         {
-            this.tableros = tableros;
-            this.formaDeGanar = Enum.Parse<FormasdeGanar>(formaDeGanar);
+            _tableros = tableros;
+            _formaDeGanar = Enum.Parse<FormasdeGanar>(formaDeGanar);
 
             pnlTableros.Controls.Clear();
             flpHistorial.Controls.Clear();
@@ -36,7 +36,7 @@ namespace JuegoDeLoteria.Controles
 
         private void DibujarTableros()
         {
-            foreach (var tablero in tableros)
+            foreach (var tablero in _tableros)
             {
                 var panelTablero = new Panel();
                 panelTablero.Width = 220;
@@ -84,7 +84,7 @@ namespace JuegoDeLoteria.Controles
         {
             if (sender is PictureBox ficha)
             {
-                offsetArrastre = e.Location;
+                _offsetArrastre = e.Location;
                 ficha.DoDragDrop(ficha, DragDropEffects.Move);
             }
         }
@@ -142,8 +142,8 @@ namespace JuegoDeLoteria.Controles
         {
             this.Invoke(async () =>
             {
-                bool esValido = tableros.Any(t =>
-                    t.VerificarVictoria(cartasMencionadas, formaDeGanar));
+                bool esValido = _tableros.Any(t =>
+                    t.VerificarVictoria(cartasMencionadas, _formaDeGanar));
 
                 await MainForm.Cliente.EnviarResultadoAsync(esValido);
 
@@ -162,7 +162,7 @@ namespace JuegoDeLoteria.Controles
                 MainForm.Cliente.OnCartaMencionada -= OnCartaMencionada;
                 MainForm.Cliente.OnVerificarLoteria -= OnVerificarLoteria;
                 MainForm.Cliente.OnJuegoTerminado -= OnJuegoTerminado_Recibido;
-                OnJuegoTerminado?.Invoke();
+                OnJuegoTerminado?.Invoke(ganador);
             });
         }
     }

@@ -24,6 +24,8 @@ namespace JuegoDeLoteria.Redes
         public event Action<string>? OnNuevoHost;
         public event Action<List<int>>? OnCartasRestantes;
         public event Action? OnConexionPerdida;
+        public event Action<int, int>? OnActualizarListos;
+        public event Action? OnConteoIniciado;
 
         public ClienteDeJuego()
         {
@@ -79,6 +81,12 @@ namespace JuegoDeLoteria.Redes
             _conexion.On<List<int>>("CartasRestantes", (cartas) =>
                 OnCartasRestantes?.Invoke(cartas));
 
+            _conexion.On<int, int>("ActualizarListos", (listos, total) =>
+                OnActualizarListos?.Invoke(listos, total));
+
+            _conexion.On("ConteoIniciado", () =>
+                OnConteoIniciado?.Invoke());
+
             await _conexion.StartAsync();
         }
 
@@ -97,6 +105,11 @@ namespace JuegoDeLoteria.Redes
         {
             IntervaloSegundos = intervaloSegundos;
             await _conexion.InvokeAsync("IniciarJuego", CodigoSala, formaDeGanar, intervaloSegundos);
+        }
+
+        public async Task JugadorListoAsync()
+        {
+            await _conexion.InvokeAsync("JugadorListo", CodigoSala);
         }
 
         public async Task ReclamarLoteriaAsync()

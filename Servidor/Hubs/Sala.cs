@@ -10,6 +10,8 @@ namespace Servidor.Hubs
         public List<int> CartasMencionadas { get; set; }
         public bool EnJuego { get; set; }
         public MazoCompartido Mazo { get; set; }
+        public HashSet<string> JugadoresListos { get; set; }
+        public int IntervaloSegundos { get; set; }
 
         public Sala(string codigo, string hostId)
         {
@@ -19,6 +21,14 @@ namespace Servidor.Hubs
             CartasMencionadas = new List<int>();
             EnJuego = false;
             Mazo = new MazoCompartido();
+            JugadoresListos = new HashSet<string>();
+            IntervaloSegundos = 5;
+        }
+
+        public bool TodosListos()
+        {
+            return Jugadores.Count > 0 &&
+                   JugadoresListos.Count == Jugadores.Count;
         }
     }
 }

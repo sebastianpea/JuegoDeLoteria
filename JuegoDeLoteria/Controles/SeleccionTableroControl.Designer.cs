@@ -30,10 +30,10 @@
         {
             nudCantidadTableros = new NumericUpDown();
             btnAleatorio = new Button();
-            btnElegirPropio = new Button();
             btnConfirmar = new Button();
             lblInstrucciones = new Label();
-            pnlSeleccion = new FlowLayoutPanel();
+            pnlTablero = new FlowLayoutPanel();
+            flpCartasDisponibles = new FlowLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)nudCantidadTableros).BeginInit();
             SuspendLayout();
             // 
@@ -54,16 +54,6 @@
             btnAleatorio.UseVisualStyleBackColor = true;
             btnAleatorio.Click += btnAleatorio_Click;
             // 
-            // btnElegirPropio
-            // 
-            btnElegirPropio.Location = new Point(460, 624);
-            btnElegirPropio.Name = "btnElegirPropio";
-            btnElegirPropio.Size = new Size(126, 29);
-            btnElegirPropio.TabIndex = 2;
-            btnElegirPropio.Text = "Elegir Propio";
-            btnElegirPropio.UseVisualStyleBackColor = true;
-            btnElegirPropio.Click += btnElegirPropio_Click;
-            // 
             // btnConfirmar
             // 
             btnConfirmar.Location = new Point(743, 624);
@@ -83,21 +73,28 @@
             lblInstrucciones.TabIndex = 4;
             lblInstrucciones.Text = "Instrucciones";
             // 
-            // pnlSeleccion
+            // pnlTablero
             // 
-            pnlSeleccion.Location = new Point(326, 26);
-            pnlSeleccion.Name = "pnlSeleccion";
-            pnlSeleccion.Size = new Size(636, 569);
-            pnlSeleccion.TabIndex = 5;
+            pnlTablero.Location = new Point(265, 26);
+            pnlTablero.Name = "pnlTablero";
+            pnlTablero.Size = new Size(413, 480);
+            pnlTablero.TabIndex = 5;
+            // 
+            // flpCartasDisponibles
+            // 
+            flpCartasDisponibles.Location = new Point(698, 74);
+            flpCartasDisponibles.Name = "flpCartasDisponibles";
+            flpCartasDisponibles.Size = new Size(631, 521);
+            flpCartasDisponibles.TabIndex = 0;
             // 
             // SeleccionTableroControl
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            Controls.Add(pnlSeleccion);
+            Controls.Add(flpCartasDisponibles);
+            Controls.Add(pnlTablero);
             Controls.Add(lblInstrucciones);
             Controls.Add(btnConfirmar);
-            Controls.Add(btnElegirPropio);
             Controls.Add(btnAleatorio);
             Controls.Add(nudCantidadTableros);
             Name = "SeleccionTableroControl";
@@ -111,9 +108,9 @@
 
         private NumericUpDown nudCantidadTableros;
         private Button btnAleatorio;
-        private Button btnElegirPropio;
         private Button btnConfirmar;
         private Label lblInstrucciones;
-        private FlowLayoutPanel pnlSeleccion;
+        private FlowLayoutPanel pnlTablero;
+        private FlowLayoutPanel flpCartasDisponibles;
     }
 }

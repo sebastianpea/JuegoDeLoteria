@@ -36,7 +36,7 @@ namespace JuegoDeLoteria.Controles
             flpHistorial.Controls.Clear();
             btnLoteria.Enabled = true;
             lblCuentaRegresiva.Text = "";
-            lblNombreCartaActual.Text = "Esperando primera carta...";
+            lblNombreCartaActual.Text = "Esperando a que todos estén listos...";
 
             cuentaRegresiva = new System.Windows.Forms.Timer();
             cuentaRegresiva.Interval = 1000;
@@ -48,6 +48,24 @@ namespace JuegoDeLoteria.Controles
             MainForm.Cliente.OnCartaMencionada += OnCartaMencionada;
             MainForm.Cliente.OnVerificarLoteria += OnVerificarLoteria;
             MainForm.Cliente.OnJuegoTerminado += OnJuegoTerminado_Recibido;
+            MainForm.Cliente.OnActualizarListos += OnActualizarListos;
+            MainForm.Cliente.OnConteoIniciado += OnConteoIniciado;
+        }
+
+        private void OnActualizarListos(int listos, int total)
+        {
+            this.Invoke(() =>
+            {
+                lblNombreCartaActual.Text = $"Esperando a que todos estén listos... ({listos}/{total})";
+            });
+        }
+
+        private void OnConteoIniciado()
+        {
+            this.Invoke(() =>
+            {
+                lblNombreCartaActual.Text = "¡El juego ha comenzado!";
+            });
         }
 
         private void CuentaRegresiva_Tick(object? sender, EventArgs e)
@@ -205,6 +223,8 @@ namespace JuegoDeLoteria.Controles
                 MainForm.Cliente.OnCartaMencionada -= OnCartaMencionada;
                 MainForm.Cliente.OnVerificarLoteria -= OnVerificarLoteria;
                 MainForm.Cliente.OnJuegoTerminado -= OnJuegoTerminado_Recibido;
+                MainForm.Cliente.OnActualizarListos -= OnActualizarListos;
+                MainForm.Cliente.OnConteoIniciado -= OnConteoIniciado;
                 OnJuegoTerminado?.Invoke(ganador);
             });
         }

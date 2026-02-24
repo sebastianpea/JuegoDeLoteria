@@ -19,6 +19,7 @@ namespace Servidor.Hubs
                 if (sala.Jugadores.ContainsKey(Context.ConnectionId))
                 {
                     sala.Jugadores.Remove(Context.ConnectionId);
+                    sala.JugadoresListos.Remove(Context.ConnectionId);
 
                     if (sala.Jugadores.Count == 0)
                     {
@@ -35,6 +36,11 @@ namespace Servidor.Hubs
 
                     await Clients.Group(sala.Codigo)
                         .SendAsync("JugadorSalio", Context.ConnectionId);
+
+                    // checa si todos los jugadores estan listos
+                    if (sala.EnJuego && sala.TodosListos())
+                        await IniciarConteoDeCartas(sala);
+
                     break;
                 }
             }
@@ -85,29 +91,54 @@ namespace Servidor.Hubs
 
             sala.EnJuego = true;
             sala.CartasMencionadas.Clear();
+            sala.JugadoresListos.Clear();
+            sala.IntervaloSegundos = intervaloSegundos;
             sala.Mazo.Barajar();
 
             await Clients.Group(codigoSala).SendAsync("JuegoIniciado", formaDeGanar);
+        }
+
+        public async Task JugadorListo(string codigoSala)
+        {
+            if (!_salas.ContainsKey(codigoSala)) return;
+
+            Sala sala = _salas[codigoSala];
+            sala.JugadoresListos.Add(Context.ConnectionId);
+
+            int listos = sala.JugadoresListos.Count;
+            int total = sala.Jugadores.Count;
+
+            await Clients.Group(codigoSala)
+                .SendAsync("ActualizarListos", listos, total);
+
+            if (sala.TodosListos())
+                await IniciarConteoDeCartas(sala);
+        }
+
+        private async Task IniciarConteoDeCartas(Sala sala)
+        {
+            await Clients.Group(sala.Codigo).SendAsync("ConteoIniciado");
 
             _ = Task.Run(async () =>
             {
                 while (sala.Mazo.HayCartasRestantes() && sala.EnJuego)
                 {
-                    await Task.Delay(intervaloSegundos * 1000);
+                    await Task.Delay(sala.IntervaloSegundos * 1000);
 
                     var carta = sala.Mazo.SacarCarta();
                     if (carta == null) break;
 
                     sala.CartasMencionadas.Add(carta.Id);
 
-                    await Clients.Group(codigoSala)
+                    await Clients.Group(sala.Codigo)
                         .SendAsync("CartaMencionada", carta.Id, carta.Nombre);
                 }
 
                 if (sala.EnJuego)
                 {
                     sala.EnJuego = false;
-                    await Clients.Group(codigoSala).SendAsync("JuegoTerminado", "Nadie ganó.");
+                    await Clients.Group(sala.Codigo)
+                        .SendAsync("JuegoTerminado", "Nadie ganó.");
                 }
             });
         }
@@ -117,7 +148,6 @@ namespace Servidor.Hubs
             if (!_salas.ContainsKey(codigoSala)) return;
 
             Sala sala = _salas[codigoSala];
-
             if (!sala.EnJuego) return;
 
             await Clients.Caller.SendAsync("VerificarLoteria", sala.CartasMencionadas);
@@ -157,6 +187,7 @@ namespace Servidor.Hubs
 
             sala.EnJuego = false;
             sala.CartasMencionadas.Clear();
+            sala.JugadoresListos.Clear();
             sala.Mazo = new MazoCompartido();
 
             await Clients.Group(codigoSala).SendAsync("JuegoReiniciado");

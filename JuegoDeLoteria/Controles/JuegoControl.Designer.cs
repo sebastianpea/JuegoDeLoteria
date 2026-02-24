@@ -34,6 +34,7 @@
             pnlTableros = new Panel();
             pnlFichas = new Panel();
             btnLoteria = new Button();
+            lblCuentaRegresiva = new Label();
             ((System.ComponentModel.ISupportInitialize)pbCartaActual).BeginInit();
             SuspendLayout();
             // 
@@ -85,10 +86,20 @@
             btnLoteria.UseVisualStyleBackColor = true;
             btnLoteria.Click += btnLoteria_Click;
             // 
+            // lblCuentaRegresiva
+            // 
+            lblCuentaRegresiva.AutoSize = true;
+            lblCuentaRegresiva.Location = new Point(50, 69);
+            lblCuentaRegresiva.Name = "lblCuentaRegresiva";
+            lblCuentaRegresiva.Size = new Size(119, 20);
+            lblCuentaRegresiva.TabIndex = 3;
+            lblCuentaRegresiva.Text = "CuentaRegresiva";
+            // 
             // JuegoControl
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(lblCuentaRegresiva);
             Controls.Add(btnLoteria);
             Controls.Add(pnlFichas);
             Controls.Add(pnlTableros);
@@ -110,5 +121,6 @@
         private Panel pnlTableros;
         private Panel pnlFichas;
         private Button btnLoteria;
+        private Label lblCuentaRegresiva;
     }
 }

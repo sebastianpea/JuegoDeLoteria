@@ -64,27 +64,40 @@ namespace JuegoDeLoteria.Forms
 
             lobbyControl.OnJuegoIniciado += () =>
             {
-                MostrarControl(seleccionTableroControl);
+                this.Invoke(() => MostrarControl(seleccionTableroControl));
             };
 
             seleccionTableroControl.OnTablerosSeleccionados += (tableros) =>
             {
-                MostrarControl(juegoControl);
-                juegoControl.InicializarJuego(MainForm.Cliente.FormaDeGanar, tableros);
+                this.Invoke(() =>
+                {
+                    MostrarControl(juegoControl);
+                    juegoControl.InicializarJuego(MainForm.Cliente.FormaDeGanar, tableros);
+                });
             };
 
             juegoControl.OnJuegoTerminado += (ganador) =>
             {
-                MostrarControl(postJuegoControl);
-                postJuegoControl.InicializarPostJuego(ganador);
+                this.Invoke(() =>
+                {
+                    MostrarControl(postJuegoControl);
+                    postJuegoControl.InicializarPostJuego(ganador);
+                });
             };
 
             postJuegoControl.OnJugarDeNuevo += () =>
             {
-                MostrarControl(lobbyControl);
-                lobbyControl.InicializarLobby();
+                this.Invoke(() =>
+                {
+                    MostrarControl(lobbyControl);
+                    lobbyControl.InicializarLobby();
+                });
             };
-            postJuegoControl.OnSalir += () => MostrarControl(menuControl);
+
+            postJuegoControl.OnSalir += () =>
+            {
+                this.Invoke(() => MostrarControl(menuControl));
+            };
 
             configuracionControl.OnRegresar += () => MostrarControl(menuControl);
 

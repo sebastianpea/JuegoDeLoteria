@@ -7,10 +7,10 @@ namespace JuegoDeLoteria.Controles
     {
         public event Action<string>? OnJuegoTerminado;
 
-        private List<Tablero> _tableros = new List<Tablero>();
-        private FormasdeGanar _formaDeGanar;
-        private PictureBox? _fichaArrastrada = null;
-        private Point _offsetArrastre;
+        private List<Tablero> tableros = new List<Tablero>();
+        private FormasdeGanar formaDeGanar;
+        private PictureBox? fichaArrastrada = null;
+        private Point offsetArrastre;
 
         public JuegoControl()
         {
@@ -19,8 +19,14 @@ namespace JuegoDeLoteria.Controles
 
         public void InicializarJuego(string formaDeGanar, List<Tablero> tableros)
         {
-            _tableros = tableros;
-            _formaDeGanar = Enum.Parse<FormasdeGanar>(formaDeGanar);
+            if (this.InvokeRequired)
+            {
+                this.Invoke(() => InicializarJuego(formaDeGanar, tableros));
+                return;
+            }
+
+            this.tableros = tableros;
+            this.formaDeGanar = Enum.Parse<FormasdeGanar>(formaDeGanar);
 
             pnlTableros.Controls.Clear();
             flpHistorial.Controls.Clear();
@@ -36,7 +42,13 @@ namespace JuegoDeLoteria.Controles
 
         private void DibujarTableros()
         {
-            foreach (var tablero in _tableros)
+            if (this.InvokeRequired)
+            {
+                this.Invoke(() => DibujarTableros());
+                return;
+            }
+
+            foreach (var tablero in tableros)
             {
                 var panelTablero = new Panel();
                 panelTablero.Width = 220;
@@ -68,6 +80,12 @@ namespace JuegoDeLoteria.Controles
 
         private void CrearFichas()
         {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(() => CrearFichas());
+                return;
+            }
+
             pnlFichas.Controls.Clear();
             for (int i = 0; i < 20; i++)
             {
@@ -84,7 +102,7 @@ namespace JuegoDeLoteria.Controles
         {
             if (sender is PictureBox ficha)
             {
-                _offsetArrastre = e.Location;
+                offsetArrastre = e.Location;
                 ficha.DoDragDrop(ficha, DragDropEffects.Move);
             }
         }
@@ -142,8 +160,8 @@ namespace JuegoDeLoteria.Controles
         {
             this.Invoke(async () =>
             {
-                bool esValido = _tableros.Any(t =>
-                    t.VerificarVictoria(cartasMencionadas, _formaDeGanar));
+                bool esValido = tableros.Any(t =>
+                    t.VerificarVictoria(cartasMencionadas, formaDeGanar));
 
                 await MainForm.Cliente.EnviarResultadoAsync(esValido);
 

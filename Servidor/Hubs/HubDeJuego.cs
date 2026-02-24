@@ -5,7 +5,7 @@ namespace Servidor.Hubs
 {
     public class HubDeJuego : Hub
     {
-        private static Dictionary<string, Sala> _salas = new Dictionary<string, Sala>();
+        private static Dictionary<string, Sala> salas = new Dictionary<string, Sala>();
 
         public override async Task OnConnectedAsync()
         {
@@ -14,7 +14,7 @@ namespace Servidor.Hubs
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            foreach (var sala in _salas.Values)
+            foreach (var sala in salas.Values)
             {
                 if (sala.Jugadores.ContainsKey(Context.ConnectionId))
                 {
@@ -23,7 +23,7 @@ namespace Servidor.Hubs
 
                     if (sala.Jugadores.Count == 0)
                     {
-                        _salas.Remove(sala.Codigo);
+                        salas.Remove(sala.Codigo);
                         break;
                     }
 
@@ -37,7 +37,6 @@ namespace Servidor.Hubs
                     await Clients.Group(sala.Codigo)
                         .SendAsync("JugadorSalio", Context.ConnectionId);
 
-                    // checa si todos los jugadores estan listos
                     if (sala.EnJuego && sala.TodosListos())
                         await IniciarConteoDeCartas(sala);
 
@@ -50,10 +49,10 @@ namespace Servidor.Hubs
 
         public async Task UnirseASala(string nombre, string codigoSala)
         {
-            if (!_salas.ContainsKey(codigoSala))
-                _salas[codigoSala] = new Sala(codigoSala, Context.ConnectionId);
+            if (!salas.ContainsKey(codigoSala))
+                salas[codigoSala] = new Sala(codigoSala, Context.ConnectionId);
 
-            Sala sala = _salas[codigoSala];
+            Sala sala = salas[codigoSala];
 
             if (sala.EnJuego)
             {
@@ -79,9 +78,9 @@ namespace Servidor.Hubs
 
         public async Task IniciarJuego(string codigoSala, string formaDeGanar, int intervaloSegundos)
         {
-            if (!_salas.ContainsKey(codigoSala)) return;
+            if (!salas.ContainsKey(codigoSala)) return;
 
-            Sala sala = _salas[codigoSala];
+            Sala sala = salas[codigoSala];
 
             if (sala.HostId != Context.ConnectionId)
             {
@@ -100,9 +99,9 @@ namespace Servidor.Hubs
 
         public async Task JugadorListo(string codigoSala)
         {
-            if (!_salas.ContainsKey(codigoSala)) return;
+            if (!salas.ContainsKey(codigoSala)) return;
 
-            Sala sala = _salas[codigoSala];
+            Sala sala = salas[codigoSala];
             sala.JugadoresListos.Add(Context.ConnectionId);
 
             int listos = sala.JugadoresListos.Count;
@@ -123,8 +122,7 @@ namespace Servidor.Hubs
             {
                 while (sala.Mazo.HayCartasRestantes() && sala.EnJuego)
                 {
-                    await Task.Delay(sala.IntervaloSegundos * 1000);
-
+                    // Call card first, then wait
                     var carta = sala.Mazo.SacarCarta();
                     if (carta == null) break;
 
@@ -132,6 +130,8 @@ namespace Servidor.Hubs
 
                     await Clients.Group(sala.Codigo)
                         .SendAsync("CartaMencionada", carta.Id, carta.Nombre);
+
+                    await Task.Delay(sala.IntervaloSegundos * 1000);
                 }
 
                 if (sala.EnJuego)
@@ -145,9 +145,9 @@ namespace Servidor.Hubs
 
         public async Task ReclamarLoteria(string codigoSala)
         {
-            if (!_salas.ContainsKey(codigoSala)) return;
+            if (!salas.ContainsKey(codigoSala)) return;
 
-            Sala sala = _salas[codigoSala];
+            Sala sala = salas[codigoSala];
             if (!sala.EnJuego) return;
 
             await Clients.Caller.SendAsync("VerificarLoteria", sala.CartasMencionadas);
@@ -155,9 +155,9 @@ namespace Servidor.Hubs
 
         public async Task ResultadoLoteria(string codigoSala, bool esValido)
         {
-            if (!_salas.ContainsKey(codigoSala)) return;
+            if (!salas.ContainsKey(codigoSala)) return;
 
-            Sala sala = _salas[codigoSala];
+            Sala sala = salas[codigoSala];
             string nombreGanador = sala.Jugadores[Context.ConnectionId];
 
             if (esValido)
@@ -175,9 +175,9 @@ namespace Servidor.Hubs
 
         public async Task JugarDeNuevo(string codigoSala)
         {
-            if (!_salas.ContainsKey(codigoSala)) return;
+            if (!salas.ContainsKey(codigoSala)) return;
 
-            Sala sala = _salas[codigoSala];
+            Sala sala = salas[codigoSala];
 
             if (sala.HostId != Context.ConnectionId)
             {
@@ -195,9 +195,9 @@ namespace Servidor.Hubs
 
         public async Task ObtenerCartasRestantes(string codigoSala)
         {
-            if (!_salas.ContainsKey(codigoSala)) return;
+            if (!salas.ContainsKey(codigoSala)) return;
 
-            Sala sala = _salas[codigoSala];
+            Sala sala = salas[codigoSala];
 
             List<int> todasLasCartas = sala.Mazo.ObtenerTodasLasCartas()
                 .Select(c => c.Id)

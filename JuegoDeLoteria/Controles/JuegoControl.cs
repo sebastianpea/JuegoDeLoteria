@@ -9,7 +9,6 @@ namespace JuegoDeLoteria.Controles
 
         private List<Tablero> tableros = new List<Tablero>();
         private FormasdeGanar formaDeGanar;
-        private PictureBox? fichaArrastrada = null;
         private Point offsetArrastre;
         private System.Windows.Forms.Timer cuentaRegresiva;
         private int segundosRestantes;
@@ -175,6 +174,8 @@ namespace JuegoDeLoteria.Controles
         {
             this.Invoke(() =>
             {
+                MessageBox.Show($"Carta recibida: {nombre}");
+
                 var carta = new Carta(id, nombre, nombre.ToLower().Replace(" ", "_"));
                 pbCartaActual.Image = carta.ObtenerImagen();
                 lblNombreCartaActual.Text = nombre;

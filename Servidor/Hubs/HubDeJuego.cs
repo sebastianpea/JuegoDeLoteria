@@ -45,9 +45,7 @@ namespace Servidor.Hubs
         public async Task UnirseASala(string nombre, string codigoSala)
         {
             if (!_salas.ContainsKey(codigoSala))
-            {
                 _salas[codigoSala] = new Sala(codigoSala, Context.ConnectionId);
-            }
 
             Sala sala = _salas[codigoSala];
 
@@ -62,6 +60,12 @@ namespace Servidor.Hubs
 
             bool esHost = sala.HostId == Context.ConnectionId;
             await Clients.Caller.SendAsync("UnidoASala", codigoSala, esHost);
+
+            foreach (var jugador in sala.Jugadores)
+            {
+                if (jugador.Key != Context.ConnectionId)
+                    await Clients.Caller.SendAsync("JugadorUnido", jugador.Key, jugador.Value);
+            }
 
             await Clients.OthersInGroup(codigoSala)
                 .SendAsync("JugadorUnido", Context.ConnectionId, nombre);

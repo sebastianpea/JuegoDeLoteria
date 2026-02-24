@@ -20,6 +20,8 @@ namespace JuegoDeLoteria.Controles
             lblCodigoSala.Text = "Sala: " + MainForm.Cliente.CodigoSala;
             MostrarControlesHost(MainForm.Cliente.EsHost);
 
+            lstJugadores.Items.Add("(Tú) " + MainForm.Cliente.NombreJugador);
+
             MainForm.Cliente.OnJugadorUnido += OnJugadorUnido;
             MainForm.Cliente.OnJugadorSalio += OnJugadorSalio;
             MainForm.Cliente.OnJuegoIniciado += OnJuegoIniciado_Recibido;

@@ -5,14 +5,14 @@ namespace JuegoDeLoteria.Forms
 {
     public partial class MainForm : Form
     {
-        private MenuControl _menuControl;
-        private DialogoControl _dialogControl;
-        private UnirseControl _unirseControl;
-        private LobbyControl _lobbyControl;
-        private SeleccionTableroControl _seleccionTableroControl;
-        private JuegoControl _juegControl;
-        private PostJuegoControl _postJuegoControl;
-        private ConfiguracionControl _configuracionControl;
+        private MenuControl menuControl;
+        private DialogoControl dialogoControl;
+        private UnirseControl unirseControl;
+        private LobbyControl lobbyControl;
+        private SeleccionTableroControl seleccionTableroControl;
+        private JuegoControl juegoControl;
+        private PostJuegoControl postJuegoControl;
+        private ConfiguracionControl configuracionControl;
 
         public static ClienteDeJuego Cliente = new ClienteDeJuego();
 
@@ -20,25 +20,25 @@ namespace JuegoDeLoteria.Forms
         {
             InitializeComponent();
             InicializarControles();
-            MostrarControl(_menuControl);
+            MostrarControl(menuControl);
         }
 
         private void InicializarControles()
         {
-            _menuControl = new MenuControl();
-            _dialogControl = new DialogoControl();
-            _unirseControl = new UnirseControl();
-            _lobbyControl = new LobbyControl();
-            _seleccionTableroControl = new SeleccionTableroControl();
-            _juegControl = new JuegoControl();
-            _postJuegoControl = new PostJuegoControl();
-            _configuracionControl = new ConfiguracionControl();
+            menuControl = new MenuControl();
+            dialogoControl = new DialogoControl();
+            unirseControl = new UnirseControl();
+            lobbyControl = new LobbyControl();
+            seleccionTableroControl = new SeleccionTableroControl();
+            juegoControl = new JuegoControl();
+            postJuegoControl = new PostJuegoControl();
+            configuracionControl = new ConfiguracionControl();
 
             foreach (Control control in new Control[]
             {
-                _menuControl, _dialogControl, _unirseControl,
-                _lobbyControl, _seleccionTableroControl, _juegControl,
-                _postJuegoControl, _configuracionControl
+                menuControl, dialogoControl, unirseControl,
+                lobbyControl, seleccionTableroControl, juegoControl,
+                postJuegoControl, configuracionControl
             })
             {
                 control.Dock = DockStyle.Fill;
@@ -46,47 +46,56 @@ namespace JuegoDeLoteria.Forms
                 this.Controls.Add(control);
             }
 
-            _menuControl.OnJugar += () =>
+            menuControl.OnJugar += () =>
             {
-                MostrarControl(_dialogControl);
-                _dialogControl.IniciarDialogo();
+                MostrarControl(dialogoControl);
+                dialogoControl.IniciarDialogo();
             };
-            _menuControl.OnConfiguracion += () => MostrarControl(_configuracionControl);
-            _menuControl.OnSalir += () => Application.Exit();
+            menuControl.OnConfiguracion += () => MostrarControl(configuracionControl);
+            menuControl.OnSalir += () => Application.Exit();
 
-            _dialogControl.OnTerminado += () => MostrarControl(_unirseControl);
+            dialogoControl.OnTerminado += () => MostrarControl(unirseControl);
 
-            _unirseControl.OnUnido += () =>
+            unirseControl.OnUnido += () =>
             {
-                MostrarControl(_lobbyControl);
-                _lobbyControl.InicializarLobby();
-            };
-
-            _lobbyControl.OnJuegoIniciado += () =>
-            {
-                MostrarControl(_seleccionTableroControl);
+                MostrarControl(lobbyControl);
+                lobbyControl.InicializarLobby();
             };
 
-            _seleccionTableroControl.OnTablerosSeleccionados += (tableros) =>
+            lobbyControl.OnJuegoIniciado += () =>
             {
-                MostrarControl(_juegControl);
-                _juegControl.InicializarJuego(MainForm.Cliente.FormaDeGanar, tableros);
+                MostrarControl(seleccionTableroControl);
             };
 
-            _juegControl.OnJuegoTerminado += (ganador) =>
+            seleccionTableroControl.OnTablerosSeleccionados += (tableros) =>
             {
-                MostrarControl(_postJuegoControl);
-                _postJuegoControl.InicializarPostJuego(ganador);
+                MostrarControl(juegoControl);
+                juegoControl.InicializarJuego(MainForm.Cliente.FormaDeGanar, tableros);
             };
 
-            _postJuegoControl.OnJugarDeNuevo += () =>
+            juegoControl.OnJuegoTerminado += (ganador) =>
             {
-                MostrarControl(_lobbyControl);
-                _lobbyControl.InicializarLobby();
+                MostrarControl(postJuegoControl);
+                postJuegoControl.InicializarPostJuego(ganador);
             };
-            _postJuegoControl.OnSalir += () => MostrarControl(_menuControl);
 
-            _configuracionControl.OnRegresar += () => MostrarControl(_menuControl);
+            postJuegoControl.OnJugarDeNuevo += () =>
+            {
+                MostrarControl(lobbyControl);
+                lobbyControl.InicializarLobby();
+            };
+            postJuegoControl.OnSalir += () => MostrarControl(menuControl);
+
+            configuracionControl.OnRegresar += () => MostrarControl(menuControl);
+
+            Cliente.OnConexionPerdida += () =>
+            {
+                this.Invoke(() =>
+                {
+                    MessageBox.Show("Se perdió la conexión con el servidor.");
+                    MostrarControl(menuControl);
+                });
+            };
         }
 
         private void MostrarControl(Control control)

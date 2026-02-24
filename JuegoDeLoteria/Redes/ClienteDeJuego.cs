@@ -10,6 +10,7 @@ namespace JuegoDeLoteria.Redes
         public string CodigoSala { get; private set; }
         public bool EsHost { get; private set; }
         public string FormaDeGanar { get; private set; } = string.Empty;
+        public string NombreJugador { get; private set; } = string.Empty;
 
         public event Action<string, string>? OnJugadorUnido;
         public event Action<string>? OnJugadorSalio;
@@ -21,6 +22,7 @@ namespace JuegoDeLoteria.Redes
         public event Action<string>? OnError;
         public event Action<string>? OnNuevoHost;
         public event Action<List<int>>? OnCartasRestantes;
+        public event Action? OnConexionPerdida;
 
         public ClienteDeJuego()
         {
@@ -33,6 +35,12 @@ namespace JuegoDeLoteria.Redes
                 .WithUrl($"http://{ip}:5000/juego")
                 .WithAutomaticReconnect()
                 .Build();
+
+            _conexion.Closed += async (error) =>
+            {
+                OnConexionPerdida?.Invoke();
+                await Task.CompletedTask;
+            };
 
             _conexion.On<string, string>("JugadorUnido", (id, nombre) =>
                 OnJugadorUnido?.Invoke(id, nombre));
@@ -75,6 +83,7 @@ namespace JuegoDeLoteria.Redes
 
         public async Task UnirseASalaAsync(string nombre, string codigoSala)
         {
+            NombreJugador = nombre;
             CodigoSala = codigoSala;
             _conexion.On<string, bool>("UnidoASala", (codigo, esHost) =>
             {

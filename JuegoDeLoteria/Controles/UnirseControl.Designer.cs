@@ -64,6 +64,7 @@
             btnUnirse.TabIndex = 3;
             btnUnirse.Text = "Unirse";
             btnUnirse.UseVisualStyleBackColor = true;
+            btnUnirse.Click += btnUnirse_Click;
             // 
             // lblError
             // 

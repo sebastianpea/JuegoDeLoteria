@@ -1,6 +1,4 @@
-﻿using JuegoDeLoteria.Forms;
-
-namespace JuegoDeLoteria.Controles
+﻿namespace JuegoDeLoteria.Controles
 {
     public partial class MenuControl : UserControl
     {

@@ -41,6 +41,7 @@
             btnJugar.TabIndex = 0;
             btnJugar.Text = "Jugar";
             btnJugar.UseVisualStyleBackColor = true;
+            btnJugar.Click += btnJugar_Click;
             // 
             // btnConfiguracion
             // 
@@ -50,6 +51,7 @@
             btnConfiguracion.TabIndex = 1;
             btnConfiguracion.Text = "Configuración";
             btnConfiguracion.UseVisualStyleBackColor = true;
+            btnConfiguracion.Click += btnConfiguracion_Click;
             // 
             // btnSalir
             // 
@@ -59,6 +61,7 @@
             btnSalir.TabIndex = 2;
             btnSalir.Text = "Salir";
             btnSalir.UseVisualStyleBackColor = true;
+            btnSalir.Click += btnSalir_Click;
             // 
             // MenuControl
             // 

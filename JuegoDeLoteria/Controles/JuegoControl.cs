@@ -174,8 +174,6 @@ namespace JuegoDeLoteria.Controles
         {
             this.Invoke(() =>
             {
-                MessageBox.Show($"Carta recibida: {nombre}");
-
                 var carta = new Carta(id, nombre, nombre.ToLower().Replace(" ", "_"));
                 pbCartaActual.Image = carta.ObtenerImagen();
                 lblNombreCartaActual.Text = nombre;

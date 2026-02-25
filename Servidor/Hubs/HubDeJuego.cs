@@ -6,6 +6,12 @@ namespace Servidor.Hubs
     public class HubDeJuego : Hub
     {
         private static Dictionary<string, Sala> salas = new Dictionary<string, Sala>();
+        private readonly IHubContext<HubDeJuego> hubContext;
+
+        public HubDeJuego(IHubContext<HubDeJuego> hubContext)
+        {
+            this.hubContext = hubContext;
+        }
 
         public override async Task OnConnectedAsync()
         {
@@ -30,11 +36,11 @@ namespace Servidor.Hubs
                     if (sala.HostId == Context.ConnectionId)
                     {
                         sala.HostId = sala.Jugadores.Keys.First();
-                        await Clients.Group(sala.Codigo)
+                        await hubContext.Clients.Group(sala.Codigo)
                             .SendAsync("NuevoHost", sala.HostId);
                     }
 
-                    await Clients.Group(sala.Codigo)
+                    await hubContext.Clients.Group(sala.Codigo)
                         .SendAsync("JugadorSalio", Context.ConnectionId);
 
                     if (sala.EnJuego && sala.TodosListos())
@@ -94,6 +100,8 @@ namespace Servidor.Hubs
             sala.IntervaloSegundos = intervaloSegundos;
             sala.Mazo.Barajar();
 
+            Console.WriteLine($"Juego iniciado en sala {codigoSala} con intervalo {intervaloSegundos}s");
+
             await Clients.Group(codigoSala).SendAsync("JuegoIniciado", formaDeGanar);
         }
 
@@ -107,6 +115,8 @@ namespace Servidor.Hubs
             int listos = sala.JugadoresListos.Count;
             int total = sala.Jugadores.Count;
 
+            Console.WriteLine($"Jugador listo en sala {codigoSala}: {listos}/{total}");
+
             await Clients.Group(codigoSala)
                 .SendAsync("ActualizarListos", listos, total);
 
@@ -116,28 +126,39 @@ namespace Servidor.Hubs
 
         private async Task IniciarConteoDeCartas(Sala sala)
         {
-            await Clients.Group(sala.Codigo).SendAsync("ConteoIniciado");
+            Console.WriteLine($"Iniciando conteo para sala {sala.Codigo}");
+            await hubContext.Clients.Group(sala.Codigo).SendAsync("ConteoIniciado");
 
             _ = Task.Run(async () =>
             {
+                Console.WriteLine($"Task.Run iniciado para sala {sala.Codigo}");
+
+                await Task.Delay(1000);
+
                 while (sala.Mazo.HayCartasRestantes() && sala.EnJuego)
                 {
-                    // Call card first, then wait
                     var carta = sala.Mazo.SacarCarta();
-                    if (carta == null) break;
+                    if (carta == null)
+                    {
+                        Console.WriteLine("Carta es null, saliendo del loop");
+                        break;
+                    }
 
+                    Console.WriteLine($"Enviando carta: {carta.Nombre}");
                     sala.CartasMencionadas.Add(carta.Id);
 
-                    await Clients.Group(sala.Codigo)
+                    await hubContext.Clients.Group(sala.Codigo)
                         .SendAsync("CartaMencionada", carta.Id, carta.Nombre);
 
                     await Task.Delay(sala.IntervaloSegundos * 1000);
                 }
 
+                Console.WriteLine($"Loop terminado. EnJuego={sala.EnJuego}");
+
                 if (sala.EnJuego)
                 {
                     sala.EnJuego = false;
-                    await Clients.Group(sala.Codigo)
+                    await hubContext.Clients.Group(sala.Codigo)
                         .SendAsync("JuegoTerminado", "Nadie ganó.");
                 }
             });
@@ -163,7 +184,7 @@ namespace Servidor.Hubs
             if (esValido)
             {
                 sala.EnJuego = false;
-                await Clients.Group(codigoSala)
+                await hubContext.Clients.Group(codigoSala)
                     .SendAsync("JuegoTerminado", nombreGanador);
             }
             else
@@ -190,7 +211,7 @@ namespace Servidor.Hubs
             sala.JugadoresListos.Clear();
             sala.Mazo = new MazoCompartido();
 
-            await Clients.Group(codigoSala).SendAsync("JuegoReiniciado");
+            await hubContext.Clients.Group(codigoSala).SendAsync("JuegoReiniciado");
         }
 
         public async Task ObtenerCartasRestantes(string codigoSala)

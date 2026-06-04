@@ -8,7 +8,7 @@ namespace JuegoDeLoteria.Redes
         private HubConnection _conexion;
 
         public string CodigoSala { get; private set; }
-        public bool EsHost { get; private set; }
+        public bool EsHost { get; set; }
         public string FormaDeGanar { get; private set; } = string.Empty;
         public string NombreJugador { get; private set; } = string.Empty;
         public int IntervaloSegundos { get; private set; }
@@ -26,6 +26,8 @@ namespace JuegoDeLoteria.Redes
         public event Action? OnConexionPerdida;
         public event Action<int, int>? OnActualizarListos;
         public event Action? OnConteoIniciado;
+        public event Action<string, string>? OnMensajeRecibido;
+        public string ConnectionId => _conexion?.ConnectionId ?? string.Empty;
 
         public ClienteDeJuego()
         {
@@ -87,6 +89,9 @@ namespace JuegoDeLoteria.Redes
             _conexion.On("ConteoIniciado", () =>
                 OnConteoIniciado?.Invoke());
 
+            _conexion.On<string, string>(EventosHub.MensajeRecibido, (nombre, mensaje) =>
+    OnMensajeRecibido?.Invoke(nombre, mensaje));
+
             await _conexion.StartAsync();
         }
 
@@ -136,6 +141,11 @@ namespace JuegoDeLoteria.Redes
         {
             if (_conexion != null)
                 await _conexion.StopAsync();
+        }
+
+        public async Task EnviarMensajeAsync(string mensaje)
+        {
+            await _conexion.InvokeAsync(EventosHub.EnviarMensaje, CodigoSala, mensaje);
         }
     }
 }

@@ -10,6 +10,7 @@ namespace JuegoDeLoteria
         {
             AudioManager.CargarPlaylist(new List<string>
             {
+                "Musica/The One Who Got Away.mp3",
                 "Musica/cancion1.mp3"
             });
             AudioManager.ReproducirSiguiente();

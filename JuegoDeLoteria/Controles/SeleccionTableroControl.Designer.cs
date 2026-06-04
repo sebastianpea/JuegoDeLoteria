@@ -34,63 +34,87 @@
             lblInstrucciones = new Label();
             pnlTablero = new FlowLayoutPanel();
             flpCartasDisponibles = new FlowLayoutPanel();
+            label1 = new Label();
             ((System.ComponentModel.ISupportInitialize)nudCantidadTableros).BeginInit();
             SuspendLayout();
             // 
             // nudCantidadTableros
             // 
-            nudCantidadTableros.Location = new Point(1076, 26);
+            nudCantidadTableros.BackColor = Color.Black;
+            nudCantidadTableros.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            nudCantidadTableros.ForeColor = Color.White;
+            nudCantidadTableros.Location = new Point(945, 41);
             nudCantidadTableros.Name = "nudCantidadTableros";
-            nudCantidadTableros.Size = new Size(263, 27);
+            nudCantidadTableros.Size = new Size(263, 38);
             nudCantidadTableros.TabIndex = 0;
             // 
             // btnAleatorio
             // 
-            btnAleatorio.Location = new Point(605, 624);
+            btnAleatorio.BackColor = Color.Black;
+            btnAleatorio.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnAleatorio.ForeColor = Color.White;
+            btnAleatorio.Location = new Point(283, 754);
             btnAleatorio.Name = "btnAleatorio";
-            btnAleatorio.Size = new Size(94, 29);
+            btnAleatorio.Size = new Size(163, 52);
             btnAleatorio.TabIndex = 1;
             btnAleatorio.Text = "Aleatorio";
-            btnAleatorio.UseVisualStyleBackColor = true;
+            btnAleatorio.UseVisualStyleBackColor = false;
             btnAleatorio.Click += btnAleatorio_Click;
             // 
             // btnConfirmar
             // 
-            btnConfirmar.Location = new Point(743, 624);
+            btnConfirmar.BackColor = Color.Black;
+            btnConfirmar.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnConfirmar.ForeColor = Color.White;
+            btnConfirmar.Location = new Point(464, 754);
             btnConfirmar.Name = "btnConfirmar";
-            btnConfirmar.Size = new Size(94, 29);
+            btnConfirmar.Size = new Size(163, 52);
             btnConfirmar.TabIndex = 0;
             btnConfirmar.Text = "Confirmar";
-            btnConfirmar.UseVisualStyleBackColor = true;
+            btnConfirmar.UseVisualStyleBackColor = false;
             btnConfirmar.Click += btnConfirmar_Click;
             // 
             // lblInstrucciones
             // 
             lblInstrucciones.AutoSize = true;
-            lblInstrucciones.Location = new Point(16, 48);
+            lblInstrucciones.Font = new Font("Determination Mono Web", 24F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblInstrucciones.ForeColor = Color.White;
+            lblInstrucciones.Location = new Point(55, 48);
             lblInstrucciones.Name = "lblInstrucciones";
-            lblInstrucciones.Size = new Size(94, 20);
+            lblInstrucciones.Size = new Size(278, 41);
             lblInstrucciones.TabIndex = 4;
             lblInstrucciones.Text = "Instrucciones";
             // 
             // pnlTablero
             // 
-            pnlTablero.Location = new Point(265, 26);
+            pnlTablero.Location = new Point(486, 41);
             pnlTablero.Name = "pnlTablero";
-            pnlTablero.Size = new Size(413, 480);
+            pnlTablero.Size = new Size(404, 598);
             pnlTablero.TabIndex = 5;
             // 
             // flpCartasDisponibles
             // 
-            flpCartasDisponibles.Location = new Point(698, 74);
+            flpCartasDisponibles.Location = new Point(945, 100);
             flpCartasDisponibles.Name = "flpCartasDisponibles";
-            flpCartasDisponibles.Size = new Size(631, 521);
+            flpCartasDisponibles.Size = new Size(860, 772);
             flpCartasDisponibles.TabIndex = 0;
+            // 
+            // label1
+            // 
+            label1.Font = new Font("Determination Mono Web", 19.8000011F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label1.ForeColor = Color.White;
+            label1.Location = new Point(55, 141);
+            label1.Name = "label1";
+            label1.Size = new Size(287, 371);
+            label1.TabIndex = 6;
+            label1.Text = "Selecciona las cartas que deseas en tu tablero, así como la cantidad de Tableros que desees, cuando acabes selecciona Confirmar\r\n";
             // 
             // SeleccionTableroControl
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
+            AutoScaleDimensions = new SizeF(120F, 120F);
+            AutoScaleMode = AutoScaleMode.Dpi;
+            BackColor = Color.Black;
+            Controls.Add(label1);
             Controls.Add(flpCartasDisponibles);
             Controls.Add(pnlTablero);
             Controls.Add(lblInstrucciones);
@@ -98,7 +122,7 @@
             Controls.Add(btnAleatorio);
             Controls.Add(nudCantidadTableros);
             Name = "SeleccionTableroControl";
-            Size = new Size(1361, 789);
+            Size = new Size(1920, 1080);
             ((System.ComponentModel.ISupportInitialize)nudCantidadTableros).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -112,5 +136,6 @@
         private Label lblInstrucciones;
         private FlowLayoutPanel pnlTablero;
         private FlowLayoutPanel flpCartasDisponibles;
+        private Label label1;
     }
 }

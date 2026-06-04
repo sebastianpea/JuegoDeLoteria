@@ -4,31 +4,31 @@ namespace JuegoDeLoteria.Managers
 {
     public static class AudioManager
     {
-        private static WaveOutEvent? _outputDevice;
-        private static AudioFileReader? _audioFile;
-        private static List<string> _playlist = new List<string>();
-        private static int _indiceActual = 0;
+        private static WaveOutEvent? outputDevice;
+        private static AudioFileReader? audioFile;
+        private static List<string> playlist = new List<string>();
+        private static int indiceActual = 0;
 
         public static void CargarPlaylist(List<string> canciones)
         {
-            _playlist = canciones;
-            _indiceActual = 0;
+            playlist = canciones;
+            indiceActual = 0;
         }
 
         public static void ReproducirSiguiente()
         {
-            if (_playlist.Count == 0) return;
+            if (playlist.Count == 0) return;
 
             DetenerMusica();
 
-            _audioFile = new AudioFileReader(_playlist[_indiceActual]);
-            _outputDevice = new WaveOutEvent();
-            _outputDevice.Init(_audioFile);
-            _outputDevice.PlaybackStopped += OnCancionTerminada;
-            _outputDevice.Play();
+            audioFile = new AudioFileReader(playlist[indiceActual]);
+            outputDevice = new WaveOutEvent();
+            outputDevice.Init(audioFile);
+            outputDevice.PlaybackStopped += OnCancionTerminada;
+            outputDevice.Play();
             AplicarVolumen(Properties.Settings.Default.Volumen);
 
-            _indiceActual = (_indiceActual + 1) % _playlist.Count;
+            indiceActual = (indiceActual + 1) % playlist.Count;
         }
 
         private static void OnCancionTerminada(object? sender, StoppedEventArgs e)
@@ -38,17 +38,17 @@ namespace JuegoDeLoteria.Managers
 
         public static void AplicarVolumen(int volumen)
         {
-            if (_audioFile != null)
-                _audioFile.Volume = volumen / 100f;
+            if (audioFile != null)
+                audioFile.Volume = volumen / 100f;
         }
 
         public static void DetenerMusica()
         {
-            _outputDevice?.Stop();
-            _outputDevice?.Dispose();
-            _audioFile?.Dispose();
-            _outputDevice = null;
-            _audioFile = null;
+            outputDevice?.Stop();
+            outputDevice?.Dispose();
+            audioFile?.Dispose();
+            outputDevice = null;
+            audioFile = null;
         }
     }
 }

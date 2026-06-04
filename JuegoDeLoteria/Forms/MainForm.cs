@@ -19,6 +19,8 @@ namespace JuegoDeLoteria.Forms
         public MainForm()
         {
             InitializeComponent();
+            this.WindowState = FormWindowState.Maximized;
+            this.FormBorderStyle = FormBorderStyle.None;
             InicializarControles();
             MostrarControl(menuControl);
         }

@@ -9,6 +9,27 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Fonts\DeterminationMonoWebRegular-Z5oq.ttf" />
+    <None Remove="Fonts\DeterminationSansWebRegular-369X.ttf" />
+    <None Remove="Resources\violonchello.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\violonchello.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Fonts\DeterminationMonoWebRegular-Z5oq.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fonts\DeterminationSansWebRegular-369X.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Network\" />
   </ItemGroup>
 
@@ -43,6 +64,9 @@
 
   <ItemGroup>
     <None Update="Musica\cancion1.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Musica\The One Who Got Away.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Properties\Settings.settings">

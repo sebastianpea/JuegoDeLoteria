@@ -38,62 +38,77 @@
             // 
             // pbPersonaje
             // 
-            pbPersonaje.Location = new Point(83, 56);
+            pbPersonaje.Image = Properties.Resources.Grillby;
+            pbPersonaje.Location = new Point(90, 286);
             pbPersonaje.Name = "pbPersonaje";
-            pbPersonaje.Size = new Size(404, 541);
+            pbPersonaje.Size = new Size(581, 541);
+            pbPersonaje.SizeMode = PictureBoxSizeMode.Zoom;
             pbPersonaje.TabIndex = 0;
             pbPersonaje.TabStop = false;
             // 
             // lblDialogo
             // 
             lblDialogo.AutoSize = true;
-            lblDialogo.Location = new Point(631, 195);
+            lblDialogo.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblDialogo.ForeColor = Color.White;
+            lblDialogo.Location = new Point(733, 286);
             lblDialogo.Name = "lblDialogo";
-            lblDialogo.Size = new Size(50, 20);
+            lblDialogo.Size = new Size(103, 30);
             lblDialogo.TabIndex = 1;
             lblDialogo.Text = "label1";
             // 
             // btnContinuar
             // 
-            btnContinuar.Location = new Point(616, 568);
+            btnContinuar.BackColor = Color.Black;
+            btnContinuar.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnContinuar.ForeColor = Color.White;
+            btnContinuar.Location = new Point(1334, 726);
             btnContinuar.Name = "btnContinuar";
-            btnContinuar.Size = new Size(94, 29);
+            btnContinuar.Size = new Size(222, 65);
             btnContinuar.TabIndex = 2;
             btnContinuar.Text = "Continuar";
-            btnContinuar.UseVisualStyleBackColor = true;
+            btnContinuar.UseVisualStyleBackColor = false;
             btnContinuar.Click += btnContinuar_Click;
             // 
             // btnSi
             // 
-            btnSi.Location = new Point(743, 568);
+            btnSi.BackColor = Color.Black;
+            btnSi.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnSi.ForeColor = Color.WhiteSmoke;
+            btnSi.Location = new Point(878, 726);
             btnSi.Name = "btnSi";
-            btnSi.Size = new Size(94, 29);
+            btnSi.Size = new Size(222, 65);
             btnSi.TabIndex = 3;
             btnSi.Text = "Si";
-            btnSi.UseVisualStyleBackColor = true;
+            btnSi.UseVisualStyleBackColor = false;
             btnSi.Click += btnSi_Click;
             // 
             // btnNo
             // 
-            btnNo.Location = new Point(862, 568);
+            btnNo.BackColor = Color.Black;
+            btnNo.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnNo.ForeColor = Color.White;
+            btnNo.Location = new Point(1106, 726);
             btnNo.Name = "btnNo";
-            btnNo.Size = new Size(94, 29);
+            btnNo.Size = new Size(222, 65);
             btnNo.TabIndex = 4;
             btnNo.Text = "No";
-            btnNo.UseVisualStyleBackColor = true;
+            btnNo.UseVisualStyleBackColor = false;
             btnNo.Click += btnNo_Click;
             // 
             // DialogoControl
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
+            AutoScaleDimensions = new SizeF(120F, 120F);
+            AutoScaleMode = AutoScaleMode.Dpi;
+            BackColor = Color.Black;
             Controls.Add(btnNo);
             Controls.Add(btnSi);
             Controls.Add(btnContinuar);
             Controls.Add(lblDialogo);
             Controls.Add(pbPersonaje);
+            ForeColor = Color.Black;
             Name = "DialogoControl";
-            Size = new Size(1352, 756);
+            Size = new Size(1920, 1080);
             ((System.ComponentModel.ISupportInitialize)pbPersonaje).EndInit();
             ResumeLayout(false);
             PerformLayout();

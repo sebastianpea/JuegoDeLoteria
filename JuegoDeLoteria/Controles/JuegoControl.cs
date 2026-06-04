@@ -13,10 +13,12 @@ namespace JuegoDeLoteria.Controles
         private System.Windows.Forms.Timer cuentaRegresiva;
         private int segundosRestantes;
         private int intervaloSegundos;
+        public bool EsHost { get; set; }
 
         public JuegoControl()
         {
             InitializeComponent();
+            this.BackColor = Color.White;
         }
 
         public void InicializarJuego(string formaDeGanar, List<Tablero> tableros, int intervaloSegundos)
@@ -49,6 +51,8 @@ namespace JuegoDeLoteria.Controles
             MainForm.Cliente.OnJuegoTerminado += OnJuegoTerminado_Recibido;
             MainForm.Cliente.OnActualizarListos += OnActualizarListos;
             MainForm.Cliente.OnConteoIniciado += OnConteoIniciado;
+
+            chatControl2.InicializarChat();
         }
 
         private void OnActualizarListos(int listos, int total)
@@ -84,33 +88,13 @@ namespace JuegoDeLoteria.Controles
                 return;
             }
 
+            pnlTableros.Controls.Clear();
+
             foreach (var tablero in tableros)
             {
-                var panelTablero = new Panel();
-                panelTablero.Width = 220;
-                panelTablero.Height = 220;
-                panelTablero.Margin = new Padding(10);
-
-                for (int fila = 0; fila < tablero.Tamaño; fila++)
-                {
-                    for (int col = 0; col < tablero.Tamaño; col++)
-                    {
-                        var carta = tablero.Cartas[fila * tablero.Tamaño + col];
-                        var pb = new PictureBox();
-                        pb.Size = new Size(50, 50);
-                        pb.Location = new Point(col * 55, fila * 55);
-                        pb.SizeMode = PictureBoxSizeMode.Zoom;
-                        pb.Image = carta.ObtenerImagen();
-                        pb.Tag = (tablero, fila, col);
-                        pb.AllowDrop = true;
-                        pb.DragEnter += Celda_DragEnter;
-                        pb.DragDrop += Celda_DragDrop;
-                        pb.DragOver += Celda_DragOver;
-                        panelTablero.Controls.Add(pb);
-                    }
-                }
-
-                pnlTableros.Controls.Add(panelTablero);
+                var tableroControl = new TableroControl(tablero);
+                tableroControl.Margin = new Padding(10);
+                pnlTableros.Controls.Add(tableroControl);
             }
         }
 
@@ -126,8 +110,10 @@ namespace JuegoDeLoteria.Controles
             for (int i = 0; i < 20; i++)
             {
                 var ficha = new PictureBox();
-                ficha.Size = new Size(40, 40);
-                ficha.BackColor = Color.Gold;
+                ficha.Size = new Size(50, 50);
+                ficha.SizeMode = PictureBoxSizeMode.Zoom;
+                ficha.Image = Properties.Resources.ficha;
+                ficha.BackColor = Color.Transparent;
                 ficha.Cursor = Cursors.Hand;
                 ficha.MouseDown += Ficha_MouseDown;
                 pnlFichas.Controls.Add(ficha);
@@ -143,46 +129,28 @@ namespace JuegoDeLoteria.Controles
             }
         }
 
-        private void Celda_DragEnter(object? sender, DragEventArgs e)
-        {
-            e.Effect = DragDropEffects.Move;
-        }
-
-        private void Celda_DragOver(object? sender, DragEventArgs e)
-        {
-            e.Effect = DragDropEffects.Move;
-        }
-
-        private void Celda_DragDrop(object? sender, DragEventArgs e)
-        {
-            if (sender is PictureBox celda && celda.Tag is (Tablero tablero, int fila, int col))
-            {
-                if (tablero.Marcado[fila, col])
-                {
-                    tablero.QuitarFicha(fila, col);
-                    celda.BackColor = Color.Transparent;
-                }
-                else
-                {
-                    tablero.PonerFicha(fila, col);
-                    celda.BackColor = Color.Gold;
-                }
-            }
-        }
-
         private void OnCartaMencionada(int id, string nombre)
         {
             this.Invoke(() =>
             {
-                var carta = new Carta(id, nombre, nombre.ToLower().Replace(" ", "_"));
-                pbCartaActual.Image = carta.ObtenerImagen();
-                lblNombreCartaActual.Text = nombre;
+                var mazo = new MazoDeCartas();
+                var carta = mazo.ObtenerTodasLasCartas().FirstOrDefault(c => c.Id == id);
 
-                var pbHistorial = new PictureBox();
-                pbHistorial.Size = new Size(40, 40);
-                pbHistorial.SizeMode = PictureBoxSizeMode.Zoom;
-                pbHistorial.Image = carta.ObtenerImagen();
-                flpHistorial.Controls.Add(pbHistorial);
+                if (carta != null)
+                {
+                    pbCartaActual.Image = carta.ObtenerImagen();
+                    lblNombreCartaActual.Text = carta.Nombre;
+
+                    var pbHistorial = new PictureBox();
+                    pbHistorial.Size = new Size(50, 50);
+                    pbHistorial.SizeMode = PictureBoxSizeMode.Zoom;
+                    pbHistorial.Image = carta.ObtenerImagen();
+                    flpHistorial.Controls.Add(pbHistorial);
+                }
+
+                foreach (Control c in pnlTableros.Controls)
+                    if (c is TableroControl tableroControl)
+                        tableroControl.MarcarCartaMencionada(id);
 
                 segundosRestantes = intervaloSegundos;
                 cuentaRegresiva.Stop();
@@ -224,8 +192,14 @@ namespace JuegoDeLoteria.Controles
                 MainForm.Cliente.OnJuegoTerminado -= OnJuegoTerminado_Recibido;
                 MainForm.Cliente.OnActualizarListos -= OnActualizarListos;
                 MainForm.Cliente.OnConteoIniciado -= OnConteoIniciado;
+                chatControl2.DetenerChat();
                 OnJuegoTerminado?.Invoke(ganador);
             });
+        }
+
+        private void lblNombreCartaActual_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

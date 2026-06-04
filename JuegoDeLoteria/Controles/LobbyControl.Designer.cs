@@ -34,72 +34,122 @@
             nudIntervalo = new NumericUpDown();
             btnIniciarJuego = new Button();
             lblEsperando = new Label();
+            label1 = new Label();
+            chatControl1 = new ChatControl();
             ((System.ComponentModel.ISupportInitialize)nudIntervalo).BeginInit();
             SuspendLayout();
             // 
             // lstJugadores
             // 
+            lstJugadores.BackColor = Color.Black;
+            lstJugadores.Font = new Font("Determination Mono Web", 25.8000011F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lstJugadores.ForeColor = Color.White;
             lstJugadores.FormattingEnabled = true;
-            lstJugadores.Location = new Point(835, 26);
+            lstJugadores.ItemHeight = 44;
+            lstJugadores.Location = new Point(1433, 0);
+            lstJugadores.Margin = new Padding(3, 2, 3, 2);
             lstJugadores.Name = "lstJugadores";
-            lstJugadores.Size = new Size(488, 704);
+            lstJugadores.Size = new Size(463, 1016);
             lstJugadores.TabIndex = 0;
             // 
             // lblCodigoSala
             // 
             lblCodigoSala.AutoSize = true;
-            lblCodigoSala.Location = new Point(86, 339);
+            lblCodigoSala.Font = new Font("Determination Mono Web", 28.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblCodigoSala.ForeColor = SystemColors.Control;
+            lblCodigoSala.Location = new Point(71, 250);
             lblCodigoSala.Name = "lblCodigoSala";
-            lblCodigoSala.Size = new Size(86, 20);
+            lblCodigoSala.Size = new Size(250, 48);
             lblCodigoSala.TabIndex = 1;
             lblCodigoSala.Text = "CodigoSala";
             // 
             // cmbFormaDeGanar
             // 
+            cmbFormaDeGanar.BackColor = Color.Black;
+            cmbFormaDeGanar.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            cmbFormaDeGanar.ForeColor = Color.White;
             cmbFormaDeGanar.FormattingEnabled = true;
-            cmbFormaDeGanar.Location = new Point(55, 107);
+            cmbFormaDeGanar.Location = new Point(36, 50);
+            cmbFormaDeGanar.Margin = new Padding(3, 2, 3, 2);
             cmbFormaDeGanar.Name = "cmbFormaDeGanar";
-            cmbFormaDeGanar.Size = new Size(548, 28);
+            cmbFormaDeGanar.Size = new Size(480, 38);
             cmbFormaDeGanar.TabIndex = 2;
             // 
             // nudIntervalo
             // 
-            nudIntervalo.Location = new Point(642, 108);
+            nudIntervalo.BackColor = Color.Black;
+            nudIntervalo.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            nudIntervalo.ForeColor = Color.White;
+            nudIntervalo.Location = new Point(532, 50);
+            nudIntervalo.Margin = new Padding(3, 2, 3, 2);
             nudIntervalo.Name = "nudIntervalo";
-            nudIntervalo.Size = new Size(150, 27);
+            nudIntervalo.Size = new Size(131, 38);
             nudIntervalo.TabIndex = 3;
             // 
             // btnIniciarJuego
             // 
-            btnIniciarJuego.Location = new Point(279, 330);
+            btnIniciarJuego.BackColor = Color.Black;
+            btnIniciarJuego.Font = new Font("Determination Mono Web", 36F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnIniciarJuego.ForeColor = Color.White;
+            btnIniciarJuego.Location = new Point(719, 437);
+            btnIniciarJuego.Margin = new Padding(3, 2, 3, 2);
             btnIniciarJuego.Name = "btnIniciarJuego";
-            btnIniciarJuego.Size = new Size(163, 29);
+            btnIniciarJuego.Size = new Size(418, 133);
             btnIniciarJuego.TabIndex = 4;
             btnIniciarJuego.Text = "IniciarJuego";
-            btnIniciarJuego.UseVisualStyleBackColor = true;
+            btnIniciarJuego.UseVisualStyleBackColor = false;
             btnIniciarJuego.Click += btnIniciarJuego_Click;
             // 
             // lblEsperando
             // 
             lblEsperando.AutoSize = true;
-            lblEsperando.Location = new Point(318, 630);
+            lblEsperando.Font = new Font("Determination Mono Web", 28.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblEsperando.ForeColor = SystemColors.Control;
+            lblEsperando.Location = new Point(1184, 968);
             lblEsperando.Name = "lblEsperando";
-            lblEsperando.Size = new Size(79, 20);
+            lblEsperando.Size = new Size(227, 48);
             lblEsperando.TabIndex = 5;
             lblEsperando.Text = "Esperando";
+            lblEsperando.Click += lblEsperando_Click;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Determination Mono Web", 28.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label1.ForeColor = SystemColors.Control;
+            label1.Location = new Point(71, 161);
+            label1.Name = "label1";
+            label1.Size = new Size(414, 48);
+            label1.TabIndex = 6;
+            label1.Text = "Nombre de la Sala";
+            // 
+            // chatControl1
+            // 
+            chatControl1.BackColor = Color.White;
+            chatControl1.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            chatControl1.Location = new Point(36, 352);
+            chatControl1.Margin = new Padding(6, 4, 6, 4);
+            chatControl1.Name = "chatControl1";
+            chatControl1.Size = new Size(579, 724);
+            chatControl1.TabIndex = 7;
             // 
             // LobbyControl
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
+            AutoScaleDimensions = new SizeF(120F, 120F);
+            AutoScaleMode = AutoScaleMode.Dpi;
+            BackColor = Color.Black;
+            Controls.Add(chatControl1);
+            Controls.Add(label1);
             Controls.Add(lblEsperando);
             Controls.Add(btnIniciarJuego);
             Controls.Add(nudIntervalo);
             Controls.Add(cmbFormaDeGanar);
             Controls.Add(lblCodigoSala);
             Controls.Add(lstJugadores);
+            Font = new Font("Determination Mono Web", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            Margin = new Padding(3, 2, 3, 2);
             Name = "LobbyControl";
-            Size = new Size(1359, 773);
+            Size = new Size(1920, 1080);
             ((System.ComponentModel.ISupportInitialize)nudIntervalo).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -113,5 +163,7 @@
         private NumericUpDown nudIntervalo;
         private Button btnIniciarJuego;
         private Label lblEsperando;
+        private ChatControl chatControl1;
+        private Label label1;
     }
 }

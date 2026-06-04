@@ -8,6 +8,7 @@ namespace JuegoDeLoteria.Juego
         public int Id { get; private set; }
         public string Nombre { get; private set; }
         public string Imagen { get; private set; }
+        public string NombreRecurso => Imagen;
 
         public Carta(int id, string nombre, string imagen)
         {
@@ -15,6 +16,7 @@ namespace JuegoDeLoteria.Juego
             Nombre = nombre;
             Imagen = imagen;
         }
+
         public Image ObtenerImagen()
         {
             return (Image)Resources.ResourceManager.GetObject(Imagen)!;

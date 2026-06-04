@@ -33,7 +33,7 @@ namespace JuegoDeLoteria.Juego
             cartas.Add(new Carta(15, "La Pera", "la_pera"));
             cartas.Add(new Carta(16, "La Bandera", "la_bandera"));
             cartas.Add(new Carta(17, "El Bandolon", "el_bandolon"));
-            cartas.Add(new Carta(18, "El Violoncello", "el_violoncello"));
+            cartas.Add(new Carta(18, "El Violoncello", "el_violonchello"));
             cartas.Add(new Carta(19, "La Garza", "la_garza"));
             cartas.Add(new Carta(20, "El Pajaro", "el_pajaro"));
             cartas.Add(new Carta(21, "La Mano", "la_mano"));

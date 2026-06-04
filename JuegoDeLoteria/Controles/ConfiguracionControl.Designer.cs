@@ -37,51 +37,64 @@
             // 
             // trackBarVolumen
             // 
-            trackBarVolumen.Location = new Point(480, 353);
+            trackBarVolumen.Location = new Point(605, 525);
+            trackBarVolumen.Margin = new Padding(6, 4, 6, 4);
             trackBarVolumen.Name = "trackBarVolumen";
-            trackBarVolumen.Size = new Size(307, 56);
+            trackBarVolumen.Size = new Size(786, 56);
             trackBarVolumen.TabIndex = 0;
             trackBarVolumen.Scroll += trackBarVolumen_Scroll;
             // 
             // lblVolumen
             // 
             lblVolumen.AutoSize = true;
-            lblVolumen.Location = new Point(589, 301);
+            lblVolumen.Location = new Point(1104, 452);
+            lblVolumen.Margin = new Padding(6, 0, 6, 0);
             lblVolumen.Name = "lblVolumen";
-            lblVolumen.Size = new Size(67, 20);
+            lblVolumen.Size = new Size(118, 30);
             lblVolumen.TabIndex = 1;
             lblVolumen.Text = "Volumen";
             // 
             // btnGuardar
             // 
-            btnGuardar.Location = new Point(599, 415);
+            btnGuardar.BackColor = Color.Black;
+            btnGuardar.Font = new Font("Determination Mono Web", 24F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnGuardar.ForeColor = Color.White;
+            btnGuardar.Location = new Point(850, 625);
+            btnGuardar.Margin = new Padding(6, 4, 6, 4);
             btnGuardar.Name = "btnGuardar";
-            btnGuardar.Size = new Size(94, 29);
+            btnGuardar.Size = new Size(224, 63);
             btnGuardar.TabIndex = 2;
             btnGuardar.Text = "Guardar";
-            btnGuardar.UseVisualStyleBackColor = true;
+            btnGuardar.UseVisualStyleBackColor = false;
             btnGuardar.Click += btnGuardar_Click;
             // 
             // btnRegresar
             // 
-            btnRegresar.Location = new Point(599, 471);
+            btnRegresar.BackColor = Color.Black;
+            btnRegresar.Font = new Font("Determination Mono Web", 24F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnRegresar.ForeColor = Color.White;
+            btnRegresar.Location = new Point(850, 696);
+            btnRegresar.Margin = new Padding(6, 4, 6, 4);
             btnRegresar.Name = "btnRegresar";
-            btnRegresar.Size = new Size(94, 29);
+            btnRegresar.Size = new Size(224, 65);
             btnRegresar.TabIndex = 3;
             btnRegresar.Text = "Regresar";
-            btnRegresar.UseVisualStyleBackColor = true;
+            btnRegresar.UseVisualStyleBackColor = false;
             btnRegresar.Click += btnRegresar_Click;
             // 
             // ConfiguracionControl
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
+            AutoScaleDimensions = new SizeF(120F, 120F);
+            AutoScaleMode = AutoScaleMode.Dpi;
+            BackColor = Color.Black;
             Controls.Add(btnRegresar);
             Controls.Add(btnGuardar);
             Controls.Add(lblVolumen);
             Controls.Add(trackBarVolumen);
+            Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            Margin = new Padding(6, 4, 6, 4);
             Name = "ConfiguracionControl";
-            Size = new Size(1404, 751);
+            Size = new Size(1920, 1080);
             ((System.ComponentModel.ISupportInitialize)trackBarVolumen).EndInit();
             ResumeLayout(false);
             PerformLayout();

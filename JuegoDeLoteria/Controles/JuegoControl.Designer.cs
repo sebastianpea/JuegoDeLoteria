@@ -31,83 +31,110 @@
             pbCartaActual = new PictureBox();
             lblNombreCartaActual = new Label();
             flpHistorial = new FlowLayoutPanel();
-            pnlTableros = new Panel();
-            pnlFichas = new Panel();
             btnLoteria = new Button();
             lblCuentaRegresiva = new Label();
+            pnlTableros = new FlowLayoutPanel();
+            pnlFichas = new FlowLayoutPanel();
+            chatControl2 = new ChatControl();
             ((System.ComponentModel.ISupportInitialize)pbCartaActual).BeginInit();
             SuspendLayout();
             // 
             // pbCartaActual
             // 
-            pbCartaActual.Location = new Point(1057, 56);
+            pbCartaActual.Location = new Point(715, 9);
             pbCartaActual.Name = "pbCartaActual";
-            pbCartaActual.Size = new Size(291, 422);
+            pbCartaActual.Size = new Size(568, 548);
+            pbCartaActual.SizeMode = PictureBoxSizeMode.Zoom;
             pbCartaActual.TabIndex = 0;
             pbCartaActual.TabStop = false;
             // 
             // lblNombreCartaActual
             // 
             lblNombreCartaActual.AutoSize = true;
-            lblNombreCartaActual.Location = new Point(1168, 495);
+            lblNombreCartaActual.BackColor = Color.Black;
+            lblNombreCartaActual.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblNombreCartaActual.ForeColor = Color.White;
+            lblNombreCartaActual.Location = new Point(82, 244);
             lblNombreCartaActual.Name = "lblNombreCartaActual";
-            lblNombreCartaActual.Size = new Size(86, 20);
+            lblNombreCartaActual.Size = new Size(178, 30);
             lblNombreCartaActual.TabIndex = 1;
             lblNombreCartaActual.Text = "CartaActual";
+            lblNombreCartaActual.Click += lblNombreCartaActual_Click;
             // 
             // flpHistorial
             // 
-            flpHistorial.Location = new Point(1000, 531);
+            flpHistorial.AutoScroll = true;
+            flpHistorial.Location = new Point(1307, 9);
             flpHistorial.Name = "flpHistorial";
-            flpHistorial.Size = new Size(439, 182);
+            flpHistorial.Size = new Size(599, 533);
             flpHistorial.TabIndex = 2;
-            // 
-            // pnlTableros
-            // 
-            pnlTableros.Location = new Point(394, 124);
-            pnlTableros.Name = "pnlTableros";
-            pnlTableros.Size = new Size(487, 334);
-            pnlTableros.TabIndex = 0;
-            // 
-            // pnlFichas
-            // 
-            pnlFichas.Location = new Point(32, 227);
-            pnlFichas.Name = "pnlFichas";
-            pnlFichas.Size = new Size(313, 426);
-            pnlFichas.TabIndex = 1;
             // 
             // btnLoteria
             // 
-            btnLoteria.Location = new Point(606, 551);
+            btnLoteria.BackColor = Color.Black;
+            btnLoteria.Font = new Font("Determination Mono Web", 36F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnLoteria.ForeColor = Color.White;
+            btnLoteria.Location = new Point(82, 34);
             btnLoteria.Name = "btnLoteria";
-            btnLoteria.Size = new Size(94, 29);
+            btnLoteria.Size = new Size(302, 149);
             btnLoteria.TabIndex = 0;
             btnLoteria.Text = "Loteria";
-            btnLoteria.UseVisualStyleBackColor = true;
+            btnLoteria.UseVisualStyleBackColor = false;
             btnLoteria.Click += btnLoteria_Click;
             // 
             // lblCuentaRegresiva
             // 
             lblCuentaRegresiva.AutoSize = true;
-            lblCuentaRegresiva.Location = new Point(50, 69);
+            lblCuentaRegresiva.BackColor = Color.Black;
+            lblCuentaRegresiva.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblCuentaRegresiva.ForeColor = Color.White;
+            lblCuentaRegresiva.Location = new Point(82, 197);
             lblCuentaRegresiva.Name = "lblCuentaRegresiva";
-            lblCuentaRegresiva.Size = new Size(119, 20);
+            lblCuentaRegresiva.Size = new Size(238, 30);
             lblCuentaRegresiva.TabIndex = 3;
             lblCuentaRegresiva.Text = "CuentaRegresiva";
             // 
+            // pnlTableros
+            // 
+            pnlTableros.AutoScroll = true;
+            pnlTableros.Location = new Point(785, 563);
+            pnlTableros.Name = "pnlTableros";
+            pnlTableros.Size = new Size(582, 490);
+            pnlTableros.TabIndex = 0;
+            // 
+            // pnlFichas
+            // 
+            pnlFichas.AutoScroll = true;
+            pnlFichas.Location = new Point(1373, 563);
+            pnlFichas.Name = "pnlFichas";
+            pnlFichas.Size = new Size(533, 503);
+            pnlFichas.TabIndex = 1;
+            // 
+            // chatControl2
+            // 
+            chatControl2.BackColor = Color.White;
+            chatControl2.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            chatControl2.Location = new Point(48, 329);
+            chatControl2.Margin = new Padding(6, 4, 6, 4);
+            chatControl2.Name = "chatControl2";
+            chatControl2.Size = new Size(579, 724);
+            chatControl2.TabIndex = 4;
+            // 
             // JuegoControl
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
-            Controls.Add(lblCuentaRegresiva);
-            Controls.Add(btnLoteria);
+            AutoScaleDimensions = new SizeF(120F, 120F);
+            AutoScaleMode = AutoScaleMode.Dpi;
+            BackColor = Color.Black;
+            Controls.Add(chatControl2);
             Controls.Add(pnlFichas);
             Controls.Add(pnlTableros);
+            Controls.Add(lblCuentaRegresiva);
+            Controls.Add(btnLoteria);
             Controls.Add(flpHistorial);
             Controls.Add(lblNombreCartaActual);
             Controls.Add(pbCartaActual);
             Name = "JuegoControl";
-            Size = new Size(1625, 739);
+            Size = new Size(1920, 1080);
             ((System.ComponentModel.ISupportInitialize)pbCartaActual).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -118,9 +145,11 @@
         private PictureBox pbCartaActual;
         private Label lblNombreCartaActual;
         private FlowLayoutPanel flpHistorial;
-        private Panel pnlTableros;
-        private Panel pnlFichas;
         private Button btnLoteria;
         private Label lblCuentaRegresiva;
+        private FlowLayoutPanel pnlTableros;
+        private ChatControl chatControl1;
+        private FlowLayoutPanel pnlFichas;
+        private ChatControl chatControl2;
     }
 }

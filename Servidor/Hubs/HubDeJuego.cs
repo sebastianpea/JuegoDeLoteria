@@ -230,5 +230,16 @@ namespace Servidor.Hubs
 
             await Clients.Caller.SendAsync("CartasRestantes", cartasRestantes);
         }
+
+        public async Task EnviarMensaje(string codigoSala, string mensaje)
+        {
+            if (!salas.ContainsKey(codigoSala)) return;
+
+            Sala sala = salas[codigoSala];
+            string nombre = sala.Jugadores[Context.ConnectionId];
+
+            await Clients.Group(codigoSala)
+                .SendAsync(EventosHub.MensajeRecibido, nombre, mensaje);
+        }
     }
 }

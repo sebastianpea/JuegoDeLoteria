@@ -12,6 +12,15 @@ namespace JuegoDeLoteria.Controles
             InitializeComponent();
             CargarFormasDeGanar();
             ConfigurarIntervalo();
+            RegistrarEventos();
+        }
+
+        private void RegistrarEventos()
+        {
+            MainForm.Cliente.OnJugadorUnido += OnJugadorUnido;
+            MainForm.Cliente.OnJugadorSalio += OnJugadorSalio;
+            MainForm.Cliente.OnJuegoIniciado += OnJuegoIniciado_Recibido;
+            MainForm.Cliente.OnNuevoHost += OnNuevoHost;
         }
 
         public void InicializarLobby()
@@ -19,12 +28,11 @@ namespace JuegoDeLoteria.Controles
             lstJugadores.Items.Clear();
             lblCodigoSala.Text = "Sala: " + MainForm.Cliente.CodigoSala;
             MostrarControlesHost(MainForm.Cliente.EsHost);
+
             lstJugadores.Items.Add("(Tú) " + MainForm.Cliente.NombreJugador);
 
-            MainForm.Cliente.OnJugadorUnido += OnJugadorUnido;
-            MainForm.Cliente.OnJugadorSalio += OnJugadorSalio;
-            MainForm.Cliente.OnJuegoIniciado += OnJuegoIniciado_Recibido;
-            MainForm.Cliente.OnNuevoHost += OnNuevoHost;
+            foreach (var jugador in MainForm.Cliente.JugadoresExistentes)
+                lstJugadores.Items.Add(jugador.Value);
 
             chatControl1.InicializarChat();
         }

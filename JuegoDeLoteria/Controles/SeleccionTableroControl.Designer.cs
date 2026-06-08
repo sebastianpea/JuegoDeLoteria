@@ -53,7 +53,7 @@
             btnAleatorio.BackColor = Color.Black;
             btnAleatorio.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnAleatorio.ForeColor = Color.White;
-            btnAleatorio.Location = new Point(283, 754);
+            btnAleatorio.Location = new Point(285, 820);
             btnAleatorio.Name = "btnAleatorio";
             btnAleatorio.Size = new Size(163, 52);
             btnAleatorio.TabIndex = 1;
@@ -66,7 +66,7 @@
             btnConfirmar.BackColor = Color.Black;
             btnConfirmar.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnConfirmar.ForeColor = Color.White;
-            btnConfirmar.Location = new Point(464, 754);
+            btnConfirmar.Location = new Point(466, 820);
             btnConfirmar.Name = "btnConfirmar";
             btnConfirmar.Size = new Size(163, 52);
             btnConfirmar.TabIndex = 0;
@@ -79,7 +79,7 @@
             lblInstrucciones.AutoSize = true;
             lblInstrucciones.Font = new Font("Determination Mono Web", 24F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblInstrucciones.ForeColor = Color.White;
-            lblInstrucciones.Location = new Point(55, 48);
+            lblInstrucciones.Location = new Point(15, 54);
             lblInstrucciones.Name = "lblInstrucciones";
             lblInstrucciones.Size = new Size(278, 41);
             lblInstrucciones.TabIndex = 4;
@@ -87,7 +87,7 @@
             // 
             // pnlTablero
             // 
-            pnlTablero.Location = new Point(486, 41);
+            pnlTablero.Location = new Point(487, 120);
             pnlTablero.Name = "pnlTablero";
             pnlTablero.Size = new Size(404, 598);
             pnlTablero.TabIndex = 5;
@@ -103,7 +103,7 @@
             // 
             label1.Font = new Font("Determination Mono Web", 19.8000011F, FontStyle.Regular, GraphicsUnit.Point, 0);
             label1.ForeColor = Color.White;
-            label1.Location = new Point(55, 141);
+            label1.Location = new Point(15, 144);
             label1.Name = "label1";
             label1.Size = new Size(287, 371);
             label1.TabIndex = 6;

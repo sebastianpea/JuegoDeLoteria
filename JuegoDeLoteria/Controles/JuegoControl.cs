@@ -1,5 +1,6 @@
 ﻿using JuegoDeLoteria.Forms;
 using JuegoDeLoteria.Juego;
+using JuegoDeLoteria.Managers;
 
 namespace JuegoDeLoteria.Controles
 {
@@ -18,7 +19,7 @@ namespace JuegoDeLoteria.Controles
         public JuegoControl()
         {
             InitializeComponent();
-            this.BackColor = Color.White;
+            this.BackColor = Color.Black;
         }
 
         public void InicializarJuego(string formaDeGanar, List<Tablero> tableros, int intervaloSegundos)
@@ -141,6 +142,8 @@ namespace JuegoDeLoteria.Controles
                     pbCartaActual.Image = carta.ObtenerImagen();
                     lblNombreCartaActual.Text = carta.Nombre;
 
+                    AudioManager.HablarCarta(carta.Nombre);
+
                     var pbHistorial = new PictureBox();
                     pbHistorial.Size = new Size(50, 50);
                     pbHistorial.SizeMode = PictureBoxSizeMode.Zoom;
@@ -198,6 +201,11 @@ namespace JuegoDeLoteria.Controles
         }
 
         private void lblNombreCartaActual_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pbCartaActual_Click(object sender, EventArgs e)
         {
 
         }

@@ -7,7 +7,7 @@ namespace JuegoDeLoteria.Controles
         public ChatControl()
         {
             InitializeComponent();
-            this.BackColor = Color.White;
+            this.BackColor = Color.Black;
         }
 
         public void InicializarChat()

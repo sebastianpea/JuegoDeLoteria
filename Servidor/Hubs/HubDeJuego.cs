@@ -7,6 +7,7 @@ namespace Servidor.Hubs
     {
         private static Dictionary<string, Sala> salas = new Dictionary<string, Sala>();
         private readonly IHubContext<HubDeJuego> hubContext;
+        public Dictionary<string, string> JugadoresExistentes { get; private set; } = new();
 
         public HubDeJuego(IHubContext<HubDeJuego> hubContext)
         {
@@ -62,7 +63,7 @@ namespace Servidor.Hubs
 
             if (sala.EnJuego)
             {
-                await Clients.Caller.SendAsync("ErrorAlUnirse", "El juego ya comenzó.");
+                await Clients.Caller.SendAsync(EventosHub.ErrorAlUnirse, "El juego ya comenzó.");
                 return;
             }
 
@@ -70,16 +71,15 @@ namespace Servidor.Hubs
             await Groups.AddToGroupAsync(Context.ConnectionId, codigoSala);
 
             bool esHost = sala.HostId == Context.ConnectionId;
-            await Clients.Caller.SendAsync("UnidoASala", codigoSala, esHost);
 
-            foreach (var jugador in sala.Jugadores)
-            {
-                if (jugador.Key != Context.ConnectionId)
-                    await Clients.Caller.SendAsync("JugadorUnido", jugador.Key, jugador.Value);
-            }
+            var jugadoresExistentes = sala.Jugadores
+                .Where(j => j.Key != Context.ConnectionId)
+                .ToDictionary(j => j.Key, j => j.Value);
+
+            await Clients.Caller.SendAsync(EventosHub.UnidoASala, codigoSala, esHost, jugadoresExistentes);
 
             await Clients.OthersInGroup(codigoSala)
-                .SendAsync("JugadorUnido", Context.ConnectionId, nombre);
+                .SendAsync(EventosHub.JugadorUnido, Context.ConnectionId, nombre);
         }
 
         public async Task IniciarJuego(string codigoSala, string formaDeGanar, int intervaloSegundos)

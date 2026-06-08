@@ -36,6 +36,7 @@
             // rtbMensajes
             // 
             rtbMensajes.BackColor = Color.Black;
+            rtbMensajes.Font = new Font("Determination Mono Web", 13.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
             rtbMensajes.ForeColor = Color.White;
             rtbMensajes.Location = new Point(17, 62);
             rtbMensajes.Name = "rtbMensajes";

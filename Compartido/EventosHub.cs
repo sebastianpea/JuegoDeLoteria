@@ -29,5 +29,6 @@
         public const string JugarDeNuevo = "JugarDeNuevo";
         public const string ObtenerCartasRestantes = "ObtenerCartasRestantes";
         public const string EnviarMensaje = "EnviarMensaje";
+        public const string ListaJugadores = "ListaJugadores";
     }
 }

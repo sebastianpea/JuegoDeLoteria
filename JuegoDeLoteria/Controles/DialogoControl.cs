@@ -6,16 +6,16 @@
 
         private List<string> lineasTutorial = new List<string>
         {
-            "hola",
-            "acompañar",
-            "ya sabes como se juega?"
+            "Ah Hola!",
+            "Me gustaria que me acompañes a jugar un poco de lotería, es solo por un rato, no te preocupes.",
+            "Asi que, ya sabes como se juega?"
         };
 
         private List<string> lineasExplicacion = new List<string>
         {
-            "pues",
+            "No pues",
             "que",
-            "wei"
+            "mal"
         };
 
         private int indiceActual = 0;
@@ -63,7 +63,6 @@
             {
                 timerTexto.Stop();
 
-                // si estamos mostrando el tutorial y es la última línea, mostramos las opciones
                 if (!mostandoExplicacion && indiceActual == lineasTutorial.Count - 1)
                 {
                     btnSi.Visible = true;
@@ -101,6 +100,11 @@
             mostandoExplicacion = true;
             indiceActual = 0;
             MostrarLinea(lineasExplicacion[indiceActual]);
+        }
+
+        private void btnSaltar_Click(object sender, EventArgs e)
+        {
+            OnTerminado?.Invoke();
         }
     }
 }

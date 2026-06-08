@@ -26,6 +26,9 @@ namespace JuegoDeLoteria.Controles
             if (!conectado) return;
 
             await MainForm.Cliente.UnirseASalaAsync(txtNombre.Text, txtCodigoSala.Text);
+
+            await Task.Delay(500);
+
             OnUnido?.Invoke();
         }
 

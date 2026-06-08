@@ -41,12 +41,13 @@
             // 
             // pbCartaActual
             // 
-            pbCartaActual.Location = new Point(715, 9);
+            pbCartaActual.Location = new Point(498, 3);
             pbCartaActual.Name = "pbCartaActual";
             pbCartaActual.Size = new Size(568, 548);
             pbCartaActual.SizeMode = PictureBoxSizeMode.Zoom;
             pbCartaActual.TabIndex = 0;
             pbCartaActual.TabStop = false;
+            pbCartaActual.Click += pbCartaActual_Click;
             // 
             // lblNombreCartaActual
             // 
@@ -64,9 +65,9 @@
             // flpHistorial
             // 
             flpHistorial.AutoScroll = true;
-            flpHistorial.Location = new Point(1307, 9);
+            flpHistorial.Location = new Point(1085, 653);
             flpHistorial.Name = "flpHistorial";
-            flpHistorial.Size = new Size(599, 533);
+            flpHistorial.Size = new Size(806, 407);
             flpHistorial.TabIndex = 2;
             // 
             // btnLoteria
@@ -97,28 +98,28 @@
             // pnlTableros
             // 
             pnlTableros.AutoScroll = true;
-            pnlTableros.Location = new Point(785, 563);
+            pnlTableros.Location = new Point(1097, 12);
             pnlTableros.Name = "pnlTableros";
-            pnlTableros.Size = new Size(582, 490);
+            pnlTableros.Size = new Size(691, 606);
             pnlTableros.TabIndex = 0;
             // 
             // pnlFichas
             // 
             pnlFichas.AutoScroll = true;
-            pnlFichas.Location = new Point(1373, 563);
+            pnlFichas.Location = new Point(518, 570);
             pnlFichas.Name = "pnlFichas";
             pnlFichas.Size = new Size(533, 503);
             pnlFichas.TabIndex = 1;
             // 
             // chatControl2
             // 
-            chatControl2.BackColor = Color.White;
+            chatControl2.BackColor = Color.Black;
             chatControl2.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            chatControl2.Location = new Point(48, 329);
+            chatControl2.Location = new Point(19, 469);
             chatControl2.Margin = new Padding(6, 4, 6, 4);
             chatControl2.Name = "chatControl2";
-            chatControl2.Size = new Size(579, 724);
-            chatControl2.TabIndex = 4;
+            chatControl2.Size = new Size(470, 724);
+            chatControl2.TabIndex = 5;
             // 
             // JuegoControl
             // 

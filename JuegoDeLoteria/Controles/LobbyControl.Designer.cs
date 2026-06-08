@@ -105,7 +105,7 @@
             lblEsperando.AutoSize = true;
             lblEsperando.Font = new Font("Determination Mono Web", 28.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblEsperando.ForeColor = SystemColors.Control;
-            lblEsperando.Location = new Point(1184, 968);
+            lblEsperando.Location = new Point(804, 657);
             lblEsperando.Name = "lblEsperando";
             lblEsperando.Size = new Size(227, 48);
             lblEsperando.TabIndex = 5;
@@ -117,21 +117,20 @@
             label1.AutoSize = true;
             label1.Font = new Font("Determination Mono Web", 28.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             label1.ForeColor = SystemColors.Control;
-            label1.Location = new Point(71, 161);
+            label1.Location = new Point(71, 184);
             label1.Name = "label1";
-            label1.Size = new Size(414, 48);
+            label1.Size = new Size(0, 48);
             label1.TabIndex = 6;
-            label1.Text = "Nombre de la Sala";
             // 
             // chatControl1
             // 
-            chatControl1.BackColor = Color.White;
+            chatControl1.BackColor = Color.Black;
             chatControl1.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            chatControl1.Location = new Point(36, 352);
+            chatControl1.Location = new Point(19, 489);
             chatControl1.Margin = new Padding(6, 4, 6, 4);
             chatControl1.Name = "chatControl1";
             chatControl1.Size = new Size(579, 724);
-            chatControl1.TabIndex = 7;
+            chatControl1.TabIndex = 8;
             // 
             // LobbyControl
             // 
@@ -163,7 +162,7 @@
         private NumericUpDown nudIntervalo;
         private Button btnIniciarJuego;
         private Label lblEsperando;
-        private ChatControl chatControl1;
         private Label label1;
+        private ChatControl chatControl1;
     }
 }

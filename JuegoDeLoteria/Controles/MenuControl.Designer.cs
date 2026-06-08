@@ -37,11 +37,11 @@
             // btnJugar
             // 
             btnJugar.BackColor = Color.Black;
-            btnJugar.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnJugar.Font = new Font("Determination Mono Web", 48F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnJugar.ForeColor = Color.White;
-            btnJugar.Location = new Point(53, 256);
+            btnJugar.Location = new Point(53, 355);
             btnJugar.Name = "btnJugar";
-            btnJugar.Size = new Size(167, 63);
+            btnJugar.Size = new Size(364, 173);
             btnJugar.TabIndex = 0;
             btnJugar.Text = "Jugar";
             btnJugar.UseVisualStyleBackColor = false;
@@ -50,11 +50,11 @@
             // btnConfiguracion
             // 
             btnConfiguracion.BackColor = Color.Black;
-            btnConfiguracion.Font = new Font("Determination Mono Web", 13.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnConfiguracion.Font = new Font("Determination Mono Web", 28.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnConfiguracion.ForeColor = Color.White;
-            btnConfiguracion.Location = new Point(53, 345);
+            btnConfiguracion.Location = new Point(53, 548);
             btnConfiguracion.Name = "btnConfiguracion";
-            btnConfiguracion.Size = new Size(178, 64);
+            btnConfiguracion.Size = new Size(364, 173);
             btnConfiguracion.TabIndex = 1;
             btnConfiguracion.Text = "Configuración";
             btnConfiguracion.UseVisualStyleBackColor = false;
@@ -63,11 +63,11 @@
             // btnSalir
             // 
             btnSalir.BackColor = Color.Black;
-            btnSalir.Font = new Font("Determination Mono Web", 13.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnSalir.Font = new Font("Determination Mono Web", 48F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnSalir.ForeColor = Color.White;
-            btnSalir.Location = new Point(53, 434);
+            btnSalir.Location = new Point(53, 727);
             btnSalir.Name = "btnSalir";
-            btnSalir.Size = new Size(167, 61);
+            btnSalir.Size = new Size(364, 173);
             btnSalir.TabIndex = 2;
             btnSalir.Text = "Salir";
             btnSalir.UseVisualStyleBackColor = false;

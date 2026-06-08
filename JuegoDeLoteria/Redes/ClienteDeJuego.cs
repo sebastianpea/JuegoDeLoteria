@@ -28,6 +28,7 @@ namespace JuegoDeLoteria.Redes
         public event Action? OnConteoIniciado;
         public event Action<string, string>? OnMensajeRecibido;
         public string ConnectionId => _conexion?.ConnectionId ?? string.Empty;
+        public Dictionary<string, string> JugadoresExistentes { get; private set; } = new();
 
         public ClienteDeJuego()
         {
@@ -92,6 +93,13 @@ namespace JuegoDeLoteria.Redes
             _conexion.On<string, string>(EventosHub.MensajeRecibido, (nombre, mensaje) =>
     OnMensajeRecibido?.Invoke(nombre, mensaje));
 
+            _conexion.On<string, bool, Dictionary<string, string>>(EventosHub.UnidoASala, (codigo, esHost, jugadores) =>
+            {
+                EsHost = esHost;
+                JugadoresExistentes = jugadores;
+            });
+
+
             await _conexion.StartAsync();
         }
 
@@ -99,11 +107,7 @@ namespace JuegoDeLoteria.Redes
         {
             NombreJugador = nombre;
             CodigoSala = codigoSala;
-            _conexion.On<string, bool>("UnidoASala", (codigo, esHost) =>
-            {
-                EsHost = esHost;
-            });
-            await _conexion.InvokeAsync("UnirseASala", nombre, codigoSala);
+            await _conexion.InvokeAsync(EventosHub.UnirseASala, nombre, codigoSala);
         }
 
         public async Task IniciarJuegoAsync(string formaDeGanar, int intervaloSegundos)

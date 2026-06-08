@@ -1,4 +1,5 @@
 ﻿using NAudio.Wave;
+using System.Speech.Synthesis;
 
 namespace JuegoDeLoteria.Managers
 {
@@ -49,6 +50,19 @@ namespace JuegoDeLoteria.Managers
             audioFile?.Dispose();
             outputDevice = null;
             audioFile = null;
+        }
+          private static SpeechSynthesizer? _voz;
+
+        public static void HablarCarta(string nombre)
+        {
+            Task.Run(() =>
+            {
+                _voz ??= new SpeechSynthesizer();
+                _voz.Rate = 0;
+                _voz.Volume = 100;
+                _voz.Speak(nombre);
+            });
+        
         }
     }
 }

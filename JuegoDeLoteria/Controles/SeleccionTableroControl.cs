@@ -7,12 +7,12 @@ namespace JuegoDeLoteria.Controles
     {
         public event Action<List<Tablero>>? OnTablerosSeleccionados;
 
-        private List<Tablero> tablerosSeleccionados = new List<Tablero>();
-        private MazoDeCartas mazo = new MazoDeCartas();
-        private int tableroActual = 0;
-        private int cantidadTableros = 1;
-        private PictureBox?[,] celdas = new PictureBox?[4, 4];
-        private Dictionary<(int, int), Carta> cartasEnCeldas = new Dictionary<(int, int), Carta>();
+        private List<Tablero> _tablerosSeleccionados = new List<Tablero>();
+        private MazoDeCartas _mazo = new MazoDeCartas();
+        private int _tableroActual = 0;
+        private int _cantidadTableros = 1;
+        private PictureBox?[,] _celdas = new PictureBox?[4, 4];
+        private Dictionary<(int, int), Carta> _cartasEnCeldas = new Dictionary<(int, int), Carta>();
 
         public SeleccionTableroControl()
         {
@@ -34,7 +34,7 @@ namespace JuegoDeLoteria.Controles
         private void MostrarCartasDisponibles()
         {
             flpCartasDisponibles.Controls.Clear();
-            var todasLasCartas = mazo.ObtenerTodasLasCartas();
+            var todasLasCartas = _mazo.ObtenerTodasLasCartas();
 
             foreach (var carta in todasLasCartas)
             {
@@ -53,8 +53,8 @@ namespace JuegoDeLoteria.Controles
         private void DibujarTableroVacio()
         {
             pnlTablero.Controls.Clear();
-            celdas = new PictureBox?[4, 4];
-            cartasEnCeldas.Clear();
+            _celdas = new PictureBox?[4, 4];
+            _cartasEnCeldas.Clear();
 
             for (int fila = 0; fila < 4; fila++)
             {
@@ -73,7 +73,7 @@ namespace JuegoDeLoteria.Controles
                     celda.DragOver += Celda_DragOver;
                     celda.MouseDown += Celda_MouseDown;
                     pnlTablero.Controls.Add(celda);
-                    celdas[fila, col] = celda;
+                    _celdas[fila, col] = celda;
                 }
             }
         }
@@ -88,10 +88,10 @@ namespace JuegoDeLoteria.Controles
         {
             if (sender is not PictureBox celda) return;
             if (celda.Tag is not (int fila, int col)) return;
-            if (!cartasEnCeldas.ContainsKey((fila, col))) return;
+            if (!_cartasEnCeldas.ContainsKey((fila, col))) return;
 
-            var carta = cartasEnCeldas[(fila, col)];
-            cartasEnCeldas.Remove((fila, col));
+            var carta = _cartasEnCeldas[(fila, col)];
+            _cartasEnCeldas.Remove((fila, col));
             celda.Image = null;
             celda.BackColor = Color.White;
             RestaurarCartaDisponible(carta);
@@ -127,13 +127,13 @@ namespace JuegoDeLoteria.Controles
                 return;
             }
 
-            if (cartasEnCeldas.ContainsKey((fila, col)))
+            if (_cartasEnCeldas.ContainsKey((fila, col)))
             {
-                RestaurarCartaDisponible(cartasEnCeldas[(fila, col)]);
-                cartasEnCeldas.Remove((fila, col));
+                RestaurarCartaDisponible(_cartasEnCeldas[(fila, col)]);
+                _cartasEnCeldas.Remove((fila, col));
             }
 
-            cartasEnCeldas[(fila, col)] = carta;
+            _cartasEnCeldas[(fila, col)] = carta;
             celda.Image = carta.ObtenerImagen();
             celda.BackColor = Color.LightGoldenrodYellow;
             MarcarCartaUsada(carta);
@@ -142,11 +142,13 @@ namespace JuegoDeLoteria.Controles
 
         private bool CartaYaEnTablero(Carta carta)
         {
-            return cartasEnCeldas.Values.Any(c => c.Id == carta.Id);
+            if (MainForm.Cliente.PermitirCartasDobles) return false;
+            return _cartasEnCeldas.Values.Any(c => c.Id == carta.Id);
         }
 
         private void MarcarCartaUsada(Carta carta)
         {
+            if (MainForm.Cliente.PermitirCartasDobles) return;
             foreach (Control control in flpCartasDisponibles.Controls)
             {
                 if (control is PictureBox pb && pb.Tag is Carta c && c.Id == carta.Id)
@@ -171,13 +173,13 @@ namespace JuegoDeLoteria.Controles
 
         private void VerificarTableroCompleto()
         {
-            btnConfirmar.Enabled = cartasEnCeldas.Count == 16;
-            ActualizarInstrucciones(cartasEnCeldas.Count);
+            btnConfirmar.Enabled = _cartasEnCeldas.Count == 16;
+            ActualizarInstrucciones(_cartasEnCeldas.Count);
         }
 
         private void ActualizarInstrucciones(int colocadas = 0)
         {
-            lblInstrucciones.Text = $"Tablero {tableroActual + 1} de {(int)nudCantidadTableros.Value} — {colocadas}/16 cartas colocadas";
+            lblInstrucciones.Text = $"Tablero {_tableroActual + 1} de {(int)nudCantidadTableros.Value} — {colocadas}/16 cartas colocadas";
         }
 
         private void btnAleatorio_Click(object sender, EventArgs e)
@@ -190,10 +192,23 @@ namespace JuegoDeLoteria.Controles
                 control.Enabled = true;
             }
 
-            var cartasAleatorias = mazo.ObtenerTodasLasCartas()
-                .OrderBy(c => Guid.NewGuid())
-                .Take(16)
-                .ToList();
+            var todasLasCartas = _mazo.ObtenerTodasLasCartas();
+            List<Carta> cartasAleatorias;
+
+            if (MainForm.Cliente.PermitirCartasDobles)
+            {
+                var rng = new Random();
+                cartasAleatorias = Enumerable.Range(0, 16)
+                    .Select(_ => todasLasCartas[rng.Next(todasLasCartas.Count)])
+                    .ToList();
+            }
+            else
+            {
+                cartasAleatorias = todasLasCartas
+                    .OrderBy(c => Guid.NewGuid())
+                    .Take(16)
+                    .ToList();
+            }
 
             int index = 0;
             for (int fila = 0; fila < 4; fila++)
@@ -201,18 +216,38 @@ namespace JuegoDeLoteria.Controles
                 for (int col = 0; col < 4; col++)
                 {
                     var carta = cartasAleatorias[index++];
-                    var celda = celdas[fila, col];
+                    var celda = _celdas[fila, col];
                     if (celda != null)
                     {
                         celda.Image = carta.ObtenerImagen();
                         celda.BackColor = Color.LightGoldenrodYellow;
                     }
-                    cartasEnCeldas[(fila, col)] = carta;
-                    MarcarCartaUsada(carta);
+                    _cartasEnCeldas[(fila, col)] = carta;
+
+                    if (!MainForm.Cliente.PermitirCartasDobles)
+                        MarcarCartaUsada(carta);
                 }
             }
 
             VerificarTableroCompleto();
+        }
+
+        private bool TableroEsIdentico(List<Carta> nuevasCartas)
+        {
+            foreach (var tablero in _tablerosSeleccionados)
+            {
+                bool identico = true;
+                for (int i = 0; i < 16; i++)
+                {
+                    if (tablero.Cartas[i].Id != nuevasCartas[i].Id)
+                    {
+                        identico = false;
+                        break;
+                    }
+                }
+                if (identico) return true;
+            }
+            return false;
         }
 
         private async void btnConfirmar_Click(object sender, EventArgs e)
@@ -220,13 +255,19 @@ namespace JuegoDeLoteria.Controles
             var cartas = new List<Carta>();
             for (int fila = 0; fila < 4; fila++)
                 for (int col = 0; col < 4; col++)
-                    cartas.Add(cartasEnCeldas[(fila, col)]);
+                    cartas.Add(_cartasEnCeldas[(fila, col)]);
 
-            tablerosSeleccionados.Add(new Tablero(cartas));
-            tableroActual++;
-            cantidadTableros = (int)nudCantidadTableros.Value;
+            if (TableroEsIdentico(cartas))
+            {
+                MessageBox.Show("Este tablero es idéntico a uno que ya seleccionaste. Por favor elige cartas diferentes.");
+                return;
+            }
 
-            if (tableroActual < cantidadTableros)
+            _tablerosSeleccionados.Add(new Tablero(cartas));
+            _tableroActual++;
+            _cantidadTableros = (int)nudCantidadTableros.Value;
+
+            if (_tableroActual < _cantidadTableros)
             {
                 DibujarTableroVacio();
                 foreach (Control control in flpCartasDisponibles.Controls)
@@ -244,10 +285,12 @@ namespace JuegoDeLoteria.Controles
                 nudCantidadTableros.Enabled = false;
                 lblInstrucciones.Text = "Esperando a los demás jugadores...";
 
-                // cambia a la pantalla de juego y pasa los tableros seleccionados
-                OnTablerosSeleccionados?.Invoke(tablerosSeleccionados);
+                var todosLosIds = _tablerosSeleccionados
+                    .SelectMany(t => t.Cartas.Select(c => c.Id))
+                    .ToList();
+                await MainForm.Cliente.EnviarTableroAsync(todosLosIds);
 
-                // dice al servidor que ya seleccionó sus tableros y que esta listo
+                OnTablerosSeleccionados?.Invoke(_tablerosSeleccionados);
                 await MainForm.Cliente.JugadorListoAsync();
             }
         }

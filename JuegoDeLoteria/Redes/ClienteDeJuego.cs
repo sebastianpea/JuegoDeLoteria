@@ -27,8 +27,17 @@ namespace JuegoDeLoteria.Redes
         public event Action<int, int>? OnActualizarListos;
         public event Action? OnConteoIniciado;
         public event Action<string, string>? OnMensajeRecibido;
+        public event Action<string>? OnDesempateIniciado;
         public string ConnectionId => _conexion?.ConnectionId ?? string.Empty;
         public Dictionary<string, string> JugadoresExistentes { get; private set; } = new();
+
+        public bool PermitirCartasDobles { get; private set; }
+        public bool EsManual { get; private set; }
+        public event Action<bool, bool>? OnActualizarConfiguracion;
+        public event Action? OnJuegoPausado;
+        public event Action? OnJuegoReanudado;
+        public event Action<int>? OnCambiarVelocidad;
+        public event Action<bool>? OnUnidoASala;
 
         public ClienteDeJuego()
         {
@@ -91,15 +100,32 @@ namespace JuegoDeLoteria.Redes
                 OnConteoIniciado?.Invoke());
 
             _conexion.On<string, string>(EventosHub.MensajeRecibido, (nombre, mensaje) =>
-    OnMensajeRecibido?.Invoke(nombre, mensaje));
+            OnMensajeRecibido?.Invoke(nombre, mensaje));
 
             _conexion.On<string, bool, Dictionary<string, string>>(EventosHub.UnidoASala, (codigo, esHost, jugadores) =>
             {
                 EsHost = esHost;
                 JugadoresExistentes = jugadores;
+                OnUnidoASala?.Invoke(esHost);
+            });
+            _conexion.On<bool, bool>(EventosHub.ActualizarConfiguracion, (permitirDobles, esManual) =>
+            {
+                PermitirCartasDobles = permitirDobles;
+                EsManual = esManual;
+                OnActualizarConfiguracion?.Invoke(permitirDobles, esManual);
             });
 
+            _conexion.On(EventosHub.JuegoPausado, () =>
+                OnJuegoPausado?.Invoke());
 
+            _conexion.On(EventosHub.JuegoReanudado, () =>
+                OnJuegoReanudado?.Invoke());
+
+            _conexion.On<int>(EventosHub.CambiarVelocidad, (intervalo) =>
+                OnCambiarVelocidad?.Invoke(intervalo));
+
+            _conexion.On<string>(EventosHub.DesempateIniciado, (jugadores) =>
+                OnDesempateIniciado?.Invoke(jugadores));
             await _conexion.StartAsync();
         }
 
@@ -150,6 +176,39 @@ namespace JuegoDeLoteria.Redes
         public async Task EnviarMensajeAsync(string mensaje)
         {
             await _conexion.InvokeAsync(EventosHub.EnviarMensaje, CodigoSala, mensaje);
+        }
+
+        public async Task ActualizarConfiguracionAsync(bool permitirCartasDobles)
+        {
+            await _conexion.InvokeAsync(EventosHub.ActualizarConfiguracion, CodigoSala, permitirCartasDobles);
+        }
+        public async Task ActualizarConfiguracionAsync(bool permitirCartasDobles, bool esManual)
+        {
+            await _conexion.InvokeAsync(EventosHub.ActualizarConfiguracion, CodigoSala, permitirCartasDobles, esManual);
+        }
+
+        public async Task PausarJuegoAsync()
+        {
+            await _conexion.InvokeAsync(EventosHub.PausarJuego, CodigoSala);
+        }
+
+        public async Task ReanudarJuegoAsync()
+        {
+            await _conexion.InvokeAsync(EventosHub.ReanudarJuego, CodigoSala);
+        }
+
+        public async Task CambiarVelocidadAsync(int nuevoIntervalo)
+        {
+            await _conexion.InvokeAsync(EventosHub.CambiarVelocidad, CodigoSala, nuevoIntervalo);
+        }
+
+        public async Task SolicitarCartaAsync()
+        {
+            await _conexion.InvokeAsync(EventosHub.CartaSolicitada, CodigoSala);
+        }
+        public async Task EnviarTableroAsync(List<int> idsCartas)
+        {
+            await _conexion.InvokeAsync(EventosHub.EnviarTablero, CodigoSala, idsCartas);
         }
     }
 }

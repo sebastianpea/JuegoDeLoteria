@@ -34,8 +34,11 @@
             btnLoteria = new Button();
             lblCuentaRegresiva = new Label();
             pnlTableros = new FlowLayoutPanel();
-            pnlFichas = new FlowLayoutPanel();
             chatControl2 = new ChatControl();
+            btnPausar = new Button();
+            btnMasFast = new Button();
+            btnMasSlow = new Button();
+            btnSiguienteCarta = new Button();
             ((System.ComponentModel.ISupportInitialize)pbCartaActual).BeginInit();
             SuspendLayout();
             // 
@@ -103,14 +106,6 @@
             pnlTableros.Size = new Size(691, 606);
             pnlTableros.TabIndex = 0;
             // 
-            // pnlFichas
-            // 
-            pnlFichas.AutoScroll = true;
-            pnlFichas.Location = new Point(518, 570);
-            pnlFichas.Name = "pnlFichas";
-            pnlFichas.Size = new Size(533, 503);
-            pnlFichas.TabIndex = 1;
-            // 
             // chatControl2
             // 
             chatControl2.BackColor = Color.Black;
@@ -121,13 +116,68 @@
             chatControl2.Size = new Size(470, 724);
             chatControl2.TabIndex = 5;
             // 
+            // btnPausar
+            // 
+            btnPausar.BackColor = Color.Black;
+            btnPausar.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnPausar.ForeColor = Color.White;
+            btnPausar.Location = new Point(82, 288);
+            btnPausar.Name = "btnPausar";
+            btnPausar.Size = new Size(151, 50);
+            btnPausar.TabIndex = 6;
+            btnPausar.Text = "Pausar";
+            btnPausar.UseVisualStyleBackColor = false;
+            btnPausar.Click += btnPausar_Click;
+            // 
+            // btnMasFast
+            // 
+            btnMasFast.BackColor = Color.Black;
+            btnMasFast.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnMasFast.ForeColor = Color.White;
+            btnMasFast.Location = new Point(641, 569);
+            btnMasFast.Name = "btnMasFast";
+            btnMasFast.Size = new Size(58, 64);
+            btnMasFast.TabIndex = 7;
+            btnMasFast.Text = "+";
+            btnMasFast.UseVisualStyleBackColor = false;
+            btnMasFast.Click += btnMasFast_Click;
+            // 
+            // btnMasSlow
+            // 
+            btnMasSlow.BackColor = Color.Black;
+            btnMasSlow.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnMasSlow.ForeColor = Color.White;
+            btnMasSlow.Location = new Point(886, 569);
+            btnMasSlow.Name = "btnMasSlow";
+            btnMasSlow.Size = new Size(58, 64);
+            btnMasSlow.TabIndex = 8;
+            btnMasSlow.Text = "-";
+            btnMasSlow.UseVisualStyleBackColor = false;
+            btnMasSlow.Click += btnMasSlow_Click;
+            // 
+            // btnSiguienteCarta
+            // 
+            btnSiguienteCarta.BackColor = Color.Black;
+            btnSiguienteCarta.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnSiguienteCarta.ForeColor = Color.White;
+            btnSiguienteCarta.Location = new Point(44, 451);
+            btnSiguienteCarta.Name = "btnSiguienteCarta";
+            btnSiguienteCarta.Size = new Size(343, 64);
+            btnSiguienteCarta.TabIndex = 9;
+            btnSiguienteCarta.Text = "Siguiente Carta";
+            btnSiguienteCarta.UseVisualStyleBackColor = false;
+            btnSiguienteCarta.Click += btnSiguienteCarta_Click;
+            // 
             // JuegoControl
             // 
             AutoScaleDimensions = new SizeF(120F, 120F);
             AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = Color.Black;
+            Controls.Add(btnSiguienteCarta);
+            Controls.Add(btnMasSlow);
+            Controls.Add(btnMasFast);
+            Controls.Add(btnPausar);
             Controls.Add(chatControl2);
-            Controls.Add(pnlFichas);
             Controls.Add(pnlTableros);
             Controls.Add(lblCuentaRegresiva);
             Controls.Add(btnLoteria);
@@ -150,7 +200,10 @@
         private Label lblCuentaRegresiva;
         private FlowLayoutPanel pnlTableros;
         private ChatControl chatControl1;
-        private FlowLayoutPanel pnlFichas;
         private ChatControl chatControl2;
+        private Button btnPausar;
+        private Button btnMasFast;
+        private Button btnMasSlow;
+        private Button btnSiguienteCarta;
     }
 }

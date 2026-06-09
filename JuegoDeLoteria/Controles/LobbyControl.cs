@@ -27,14 +27,22 @@ namespace JuegoDeLoteria.Controles
         {
             lstJugadores.Items.Clear();
             lblCodigoSala.Text = "Sala: " + MainForm.Cliente.CodigoSala;
+
+            // En lugar de leer EsHost directo, espera el evento si aún no llegó
+            MainForm.Cliente.OnUnidoASala += OnUnidoASala_Handler;
             MostrarControlesHost(MainForm.Cliente.EsHost);
 
             lstJugadores.Items.Add("(Tú) " + MainForm.Cliente.NombreJugador);
-
             foreach (var jugador in MainForm.Cliente.JugadoresExistentes)
                 lstJugadores.Items.Add(jugador.Value);
 
             chatControl1.InicializarChat();
+        }
+
+        private void OnUnidoASala_Handler(bool esHost)
+        {
+            MainForm.Cliente.OnUnidoASala -= OnUnidoASala_Handler;
+            this.Invoke(() => MostrarControlesHost(esHost));
         }
 
         private void CargarFormasDeGanar()
@@ -51,15 +59,6 @@ namespace JuegoDeLoteria.Controles
             nudIntervalo.Maximum = 30;
             nudIntervalo.Value = 5;
         }
-
-        private void MostrarControlesHost(bool esHost)
-        {
-            btnIniciarJuego.Visible = esHost;
-            cmbFormaDeGanar.Visible = esHost;
-            nudIntervalo.Visible = esHost;
-            lblEsperando.Visible = !esHost;
-        }
-
         private async void btnIniciarJuego_Click(object sender, EventArgs e)
         {
             string formaDeGanar = cmbFormaDeGanar.SelectedItem!.ToString()!;
@@ -100,6 +99,29 @@ namespace JuegoDeLoteria.Controles
         private void lblEsperando_Click(object sender, EventArgs e)
         {
 
+        }
+        private void MostrarControlesHost(bool esHost)
+        {
+            btnIniciarJuego.Visible = esHost;
+            cmbFormaDeGanar.Visible = esHost;
+            nudIntervalo.Visible = esHost;
+            chkCartasDobles.Visible = esHost;
+            chkManual.Visible = esHost;
+            lblEsperando.Visible = !esHost;
+        }
+
+        private async void chkCartasDobles_CheckedChanged(object sender, EventArgs e)
+        {
+            await MainForm.Cliente.ActualizarConfiguracionAsync(
+                chkCartasDobles.Checked,
+                chkManual.Checked);
+        }
+
+        private async void chkManual_CheckedChanged(object sender, EventArgs e)
+        {
+            await MainForm.Cliente.ActualizarConfiguracionAsync(
+                chkCartasDobles.Checked,
+                chkManual.Checked);
         }
     }
 }

@@ -44,10 +44,8 @@ namespace JuegoDeLoteria.Controles
                         padding + fila * (celdaSize + padding));
                     panel.BackColor = Color.Cornsilk;
                     panel.Tag = (fila, col);
-                    panel.AllowDrop = true;
-                    panel.DragEnter += Celda_DragEnter;
-                    panel.DragDrop += Celda_DragDrop;
-                    panel.DragOver += Celda_DragOver;
+                    panel.Cursor = Cursors.Hand;
+                    panel.Click += Celda_Click;
 
                     var pbCarta = new PictureBox();
                     pbCarta.Size = new Size(celdaSize - 20, celdaSize - 22);
@@ -55,11 +53,8 @@ namespace JuegoDeLoteria.Controles
                     pbCarta.SizeMode = PictureBoxSizeMode.Zoom;
                     pbCarta.Image = carta.ObtenerImagen();
                     pbCarta.Tag = (fila, col);
-                    pbCarta.AllowDrop = true;
-                    pbCarta.DragEnter += Celda_DragEnter;
-                    pbCarta.DragDrop += Celda_DragDrop;
-                    pbCarta.DragOver += Celda_DragOver;
-                    pbCarta.MouseDown += Celda_MouseDown;
+                    pbCarta.Cursor = Cursors.Hand;
+                    pbCarta.Click += Celda_Click;
 
                     var lblNombre = new Label();
                     lblNombre.Size = new Size(celdaSize, 15);
@@ -68,6 +63,9 @@ namespace JuegoDeLoteria.Controles
                     lblNombre.TextAlign = ContentAlignment.MiddleCenter;
                     lblNombre.Font = new Font("Arial", 6, FontStyle.Bold);
                     lblNombre.BackColor = Color.Cornsilk;
+                    lblNombre.Tag = (fila, col);
+                    lblNombre.Cursor = Cursors.Hand;
+                    lblNombre.Click += Celda_Click;
 
                     panel.Controls.Add(pbCarta);
                     panel.Controls.Add(lblNombre);
@@ -79,17 +77,7 @@ namespace JuegoDeLoteria.Controles
             }
         }
 
-        private void Celda_DragEnter(object? sender, DragEventArgs e)
-        {
-            e.Effect = DragDropEffects.Move;
-        }
-
-        private void Celda_DragOver(object? sender, DragEventArgs e)
-        {
-            e.Effect = DragDropEffects.Move;
-        }
-
-        private void Celda_DragDrop(object? sender, DragEventArgs e)
+        private void Celda_Click(object? sender, EventArgs e)
         {
             var (fila, col) = ObtenerFilaCol(sender);
             if (fila == -1) return;
@@ -98,15 +86,6 @@ namespace JuegoDeLoteria.Controles
                 QuitarFicha(fila, col);
             else
                 PonerFicha(fila, col);
-        }
-
-        private void Celda_MouseDown(object? sender, MouseEventArgs e)
-        {
-            var (fila, col) = ObtenerFilaCol(sender);
-            if (fila == -1) return;
-            if (!_tablero.Marcado[fila, col]) return;
-
-            QuitarFicha(fila, col);
         }
 
         private void PonerFicha(int fila, int col)
@@ -122,6 +101,7 @@ namespace JuegoDeLoteria.Controles
             _tablero.QuitarFicha(fila, col);
             var carta = _tablero.Cartas[fila * 4 + col];
             _celdas[fila, col].Image = carta.ObtenerImagen();
+            _panelesCeldas[fila, col].BackColor = Color.Cornsilk;
         }
 
         private Image? ObtenerImagenConFicha(string nombreRecurso)
@@ -139,6 +119,8 @@ namespace JuegoDeLoteria.Controles
                 return (f1, c1);
             if (sender is Panel p && p.Tag is (int f2, int c2))
                 return (f2, c2);
+            if (sender is Label l && l.Tag is (int f3, int c3))
+                return (f3, c3);
             return (-1, -1);
         }
 
@@ -156,6 +138,11 @@ namespace JuegoDeLoteria.Controles
                     }
                 }
             }
+        }
+
+        public void MarcarCeldaInvalida(int fila, int col)
+        {
+            _panelesCeldas[fila, col].BackColor = Color.IndianRed;
         }
     }
 }

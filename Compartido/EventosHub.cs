@@ -2,7 +2,6 @@
 {
     public static class EventosHub
     {
-        // Server → Client events
         public const string JugadorUnido = "JugadorUnido";
         public const string JugadorSalio = "JugadorSalio";
         public const string UnidoASala = "UnidoASala";
@@ -19,8 +18,16 @@
         public const string ActualizarListos = "ActualizarListos";
         public const string ConteoIniciado = "ConteoIniciado";
         public const string MensajeRecibido = "MensajeRecibido";
+        public const string ConfiguracionSala = "ConfiguracionSala";
+        public const string ActualizarConfiguracion = "ActualizarConfiguracion";
+        public const string PausarJuego = "PausarJuego";
+        public const string ReanudarJuego = "ReanudarJuego";
+        public const string CambiarVelocidad = "CambiarVelocidad";
+        public const string JuegoPausado = "JuegoPausado";
+        public const string JuegoReanudado = "JuegoReanudado";
+        public const string CartaSolicitada = "CartaSolicitada";
+        public const string EnviarTablero = "EnviarTablero";
 
-        // Client → Server methods
         public const string UnirseASala = "UnirseASala";
         public const string IniciarJuego = "IniciarJuego";
         public const string JugadorListo = "JugadorListo";
@@ -30,5 +37,8 @@
         public const string ObtenerCartasRestantes = "ObtenerCartasRestantes";
         public const string EnviarMensaje = "EnviarMensaje";
         public const string ListaJugadores = "ListaJugadores";
+        public const string DesempateIniciado = "DesempateIniciado";
+        public const string DesempateTerminado = "DesempateTerminado";
+        public const string IniciarDesempate = "IniciarDesempate";
     }
 }

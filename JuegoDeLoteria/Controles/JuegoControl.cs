@@ -30,6 +30,8 @@ namespace JuegoDeLoteria.Controles
                 return;
             }
 
+            MainForm.Cliente.OnDesempateIniciado += OnDesempateIniciado;
+
             this.tableros = tableros;
             this.formaDeGanar = Enum.Parse<FormasdeGanar>(formaDeGanar);
             this.intervaloSegundos = intervaloSegundos;
@@ -53,8 +55,21 @@ namespace JuegoDeLoteria.Controles
             MainForm.Cliente.OnActualizarListos += OnActualizarListos;
             MainForm.Cliente.OnConteoIniciado += OnConteoIniciado;
 
+            bool esHost = MainForm.Cliente.EsHost;
+            btnPausar.Visible = esHost && !MainForm.Cliente.EsManual;
+            btnMasFast.Visible = esHost && !MainForm.Cliente.EsManual;
+            btnMasSlow.Visible = esHost && !MainForm.Cliente.EsManual;
+            btnSiguienteCarta.Visible = esHost && MainForm.Cliente.EsManual;
+
+            MainForm.Cliente.OnJuegoPausado += OnJuegoPausado;
+            MainForm.Cliente.OnJuegoReanudado += OnJuegoReanudado;
+            MainForm.Cliente.OnCambiarVelocidad += OnCambiarVelocidad;
+
+
             chatControl2.InicializarChat();
         }
+
+        private bool _pausado = false;
 
         private void OnActualizarListos(int listos, int total)
         {
@@ -101,33 +116,12 @@ namespace JuegoDeLoteria.Controles
 
         private void CrearFichas()
         {
-            if (this.InvokeRequired)
-            {
-                this.Invoke(() => CrearFichas());
-                return;
-            }
 
-            pnlFichas.Controls.Clear();
-            for (int i = 0; i < 20; i++)
-            {
-                var ficha = new PictureBox();
-                ficha.Size = new Size(50, 50);
-                ficha.SizeMode = PictureBoxSizeMode.Zoom;
-                ficha.Image = Properties.Resources.ficha;
-                ficha.BackColor = Color.Transparent;
-                ficha.Cursor = Cursors.Hand;
-                ficha.MouseDown += Ficha_MouseDown;
-                pnlFichas.Controls.Add(ficha);
-            }
         }
 
         private void Ficha_MouseDown(object? sender, MouseEventArgs e)
         {
-            if (sender is PictureBox ficha)
-            {
-                offsetArrastre = e.Location;
-                ficha.DoDragDrop(ficha, DragDropEffects.Move);
-            }
+
         }
 
         private void OnCartaMencionada(int id, string nombre)
@@ -175,26 +169,68 @@ namespace JuegoDeLoteria.Controles
                 bool esValido = tableros.Any(t =>
                     t.VerificarVictoria(cartasMencionadas, formaDeGanar));
 
-                await MainForm.Cliente.EnviarResultadoAsync(esValido);
-
                 if (!esValido)
                 {
+                    foreach (var tablero in tableros)
+                    {
+                        for (int f = 0; f < 4; f++)
+                        {
+                            for (int c = 0; c < 4; c++)
+                            {
+                                if (tablero.Marcado[f, c] &&
+                                    !cartasMencionadas.Contains(tablero.Cartas[f * 4 + c].Id))
+                                {
+                                    foreach (Control ctrl in pnlTableros.Controls)
+                                    {
+                                        if (ctrl is TableroControl tc)
+                                            tc.MarcarCeldaInvalida(f, c);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    string cartasInvalidas = ObtenerNombresCartasInvalidas(cartasMencionadas);
+                    MessageBox.Show($"Tu Lotería no es válida.\n\nCartas marcadas que aún no se han llamado:\n{cartasInvalidas}");
                     btnLoteria.Enabled = true;
-                    MessageBox.Show("Tu Lotería no es válida, continúa jugando.");
                 }
+
+                await MainForm.Cliente.EnviarResultadoAsync(esValido);
             });
+        }
+
+        private string ObtenerNombresCartasInvalidas(List<int> cartasMencionadas)
+        {
+            var nombres = new List<string>();
+            foreach (var tablero in tableros)
+            {
+                for (int f = 0; f < 4; f++)
+                {
+                    for (int c = 0; c < 4; c++)
+                    {
+                        var carta = tablero.Cartas[f * 4 + c];
+                        if (tablero.Marcado[f, c] && !cartasMencionadas.Contains(carta.Id))
+                            nombres.Add(carta.Nombre);
+                    }
+                }
+            }
+            return string.Join("\n", nombres.Distinct());
         }
 
         private void OnJuegoTerminado_Recibido(string ganador)
         {
             this.Invoke(() =>
             {
+                MainForm.Cliente.OnDesempateIniciado -= OnDesempateIniciado;
                 cuentaRegresiva.Stop();
                 MainForm.Cliente.OnCartaMencionada -= OnCartaMencionada;
                 MainForm.Cliente.OnVerificarLoteria -= OnVerificarLoteria;
                 MainForm.Cliente.OnJuegoTerminado -= OnJuegoTerminado_Recibido;
                 MainForm.Cliente.OnActualizarListos -= OnActualizarListos;
                 MainForm.Cliente.OnConteoIniciado -= OnConteoIniciado;
+                MainForm.Cliente.OnJuegoPausado -= OnJuegoPausado;
+                MainForm.Cliente.OnJuegoReanudado -= OnJuegoReanudado;
+                MainForm.Cliente.OnCambiarVelocidad -= OnCambiarVelocidad;
                 chatControl2.DetenerChat();
                 OnJuegoTerminado?.Invoke(ganador);
             });
@@ -208,6 +244,68 @@ namespace JuegoDeLoteria.Controles
         private void pbCartaActual_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private async void btnPausar_Click(object sender, EventArgs e)
+        {
+            if (_pausado)
+                await MainForm.Cliente.ReanudarJuegoAsync();
+            else
+                await MainForm.Cliente.PausarJuegoAsync();
+        }
+
+        private async void btnMasFast_Click(object sender, EventArgs e)
+        {
+            int nuevoIntervalo = Math.Max(1, intervaloSegundos - 1);
+            await MainForm.Cliente.CambiarVelocidadAsync(nuevoIntervalo);
+        }
+
+        private async void btnMasSlow_Click(object sender, EventArgs e)
+        {
+            int nuevoIntervalo = Math.Min(30, intervaloSegundos + 1);
+            await MainForm.Cliente.CambiarVelocidadAsync(nuevoIntervalo);
+        }
+
+        private async void btnSiguienteCarta_Click(object sender, EventArgs e)
+        {
+            await MainForm.Cliente.SolicitarCartaAsync();
+        }
+        private void OnJuegoPausado()
+        {
+            this.Invoke(() =>
+            {
+                _pausado = true;
+                btnPausar.Text = "Reanudar";
+                lblCuentaRegresiva.Text = "Pausado";
+                cuentaRegresiva.Stop();
+            });
+        }
+
+        private void OnJuegoReanudado()
+        {
+            this.Invoke(() =>
+            {
+                _pausado = false;
+                btnPausar.Text = "Pausar";
+                cuentaRegresiva.Start();
+            });
+        }
+
+        private void OnCambiarVelocidad(int nuevoIntervalo)
+        {
+            this.Invoke(() =>
+            {
+                intervaloSegundos = nuevoIntervalo;
+                lblCuentaRegresiva.Text = $"Velocidad: {nuevoIntervalo}s";
+            });
+        }
+        private void OnDesempateIniciado(string jugadores)
+        {
+            this.Invoke(() =>
+            {
+                MessageBox.Show($"¡Empate entre: {jugadores}!\nSe seguirán dando cartas para desempatar.");
+                btnLoteria.Enabled = true;
+            });
         }
     }
 }

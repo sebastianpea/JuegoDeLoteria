@@ -36,6 +36,8 @@
             lblEsperando = new Label();
             label1 = new Label();
             chatControl1 = new ChatControl();
+            chkCartasDobles = new CheckBox();
+            chkManual = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)nudIntervalo).BeginInit();
             SuspendLayout();
             // 
@@ -57,7 +59,7 @@
             lblCodigoSala.AutoSize = true;
             lblCodigoSala.Font = new Font("Determination Mono Web", 28.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblCodigoSala.ForeColor = SystemColors.Control;
-            lblCodigoSala.Location = new Point(71, 250);
+            lblCodigoSala.Location = new Point(828, 684);
             lblCodigoSala.Name = "lblCodigoSala";
             lblCodigoSala.Size = new Size(250, 48);
             lblCodigoSala.TabIndex = 1;
@@ -91,7 +93,7 @@
             btnIniciarJuego.BackColor = Color.Black;
             btnIniciarJuego.Font = new Font("Determination Mono Web", 36F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnIniciarJuego.ForeColor = Color.White;
-            btnIniciarJuego.Location = new Point(719, 437);
+            btnIniciarJuego.Location = new Point(766, 432);
             btnIniciarJuego.Margin = new Padding(3, 2, 3, 2);
             btnIniciarJuego.Name = "btnIniciarJuego";
             btnIniciarJuego.Size = new Size(418, 133);
@@ -105,7 +107,7 @@
             lblEsperando.AutoSize = true;
             lblEsperando.Font = new Font("Determination Mono Web", 28.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblEsperando.ForeColor = SystemColors.Control;
-            lblEsperando.Location = new Point(804, 657);
+            lblEsperando.Location = new Point(828, 748);
             lblEsperando.Name = "lblEsperando";
             lblEsperando.Size = new Size(227, 48);
             lblEsperando.TabIndex = 5;
@@ -132,11 +134,39 @@
             chatControl1.Size = new Size(579, 724);
             chatControl1.TabIndex = 8;
             // 
+            // chkCartasDobles
+            // 
+            chkCartasDobles.AutoSize = true;
+            chkCartasDobles.Font = new Font("Determination Mono Web", 24F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            chkCartasDobles.ForeColor = SystemColors.Control;
+            chkCartasDobles.Location = new Point(36, 112);
+            chkCartasDobles.Name = "chkCartasDobles";
+            chkCartasDobles.Size = new Size(300, 45);
+            chkCartasDobles.TabIndex = 9;
+            chkCartasDobles.Text = "Cartas Dobles";
+            chkCartasDobles.UseVisualStyleBackColor = true;
+            chkCartasDobles.CheckedChanged += chkCartasDobles_CheckedChanged;
+            // 
+            // chkManual
+            // 
+            chkManual.AutoSize = true;
+            chkManual.Font = new Font("Determination Mono Web", 24F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            chkManual.ForeColor = SystemColors.Control;
+            chkManual.Location = new Point(36, 163);
+            chkManual.Name = "chkManual";
+            chkManual.Size = new Size(160, 45);
+            chkManual.TabIndex = 10;
+            chkManual.Text = "Manual";
+            chkManual.UseVisualStyleBackColor = true;
+            chkManual.CheckedChanged += chkManual_CheckedChanged;
+            // 
             // LobbyControl
             // 
             AutoScaleDimensions = new SizeF(120F, 120F);
             AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = Color.Black;
+            Controls.Add(chkManual);
+            Controls.Add(chkCartasDobles);
             Controls.Add(chatControl1);
             Controls.Add(label1);
             Controls.Add(lblEsperando);
@@ -164,5 +194,7 @@
         private Label lblEsperando;
         private Label label1;
         private ChatControl chatControl1;
+        private CheckBox chkCartasDobles;
+        private CheckBox chkManual;
     }
 }

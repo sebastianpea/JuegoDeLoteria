@@ -12,6 +12,12 @@ namespace Servidor.Hubs
         public MazoCompartido Mazo { get; set; }
         public HashSet<string> JugadoresListos { get; set; }
         public int IntervaloSegundos { get; set; }
+        public bool PermitirCartasDobles { get; set; }
+        public bool EstaPausado { get; set; }
+        public bool EsManual { get; set; }
+        public List<string> JugadoresEnDesempate { get; set; } = new List<string>();
+        public bool EnDesempate { get; set; }
+        public Dictionary<string, List<int>> TablerosJugadores { get; set; } = new();
 
         public Sala(string codigo, string hostId)
         {
@@ -23,6 +29,9 @@ namespace Servidor.Hubs
             Mazo = new MazoCompartido();
             JugadoresListos = new HashSet<string>();
             IntervaloSegundos = 5;
+            PermitirCartasDobles = false;
+            EstaPausado = false;
+            EsManual = false;
         }
 
         public bool TodosListos()

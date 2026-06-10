@@ -18,7 +18,6 @@ namespace JuegoDeLoteria.Redes
         public event Action<string>? OnJuegoIniciado;
         public event Action<int, string>? OnCartaMencionada;
         public event Action<List<int>>? OnVerificarLoteria;
-        public event Action<string>? OnJuegoTerminado;
         public event Action? OnJuegoReiniciado;
         public event Action<string>? OnError;
         public event Action<string>? OnNuevoHost;
@@ -29,7 +28,9 @@ namespace JuegoDeLoteria.Redes
         public event Action<string, string>? OnMensajeRecibido;
         public event Action<string>? OnDesempateIniciado;
         public string ConnectionId => _conexion?.ConnectionId ?? string.Empty;
-        public Dictionary<string, string> JugadoresExistentes { get; private set; } = new();
+        public Dictionary<string, string> JugadoresExistentes { get; private set; } = new Dictionary<string, string>();
+        public event Action<string, Dictionary<string, int>>? OnJuegoTerminado;
+        public Dictionary<string, int> Puntajes { get; private set; } = new Dictionary<string, int>();
 
         public bool PermitirCartasDobles { get; private set; }
         public bool EsManual { get; private set; }
@@ -37,7 +38,9 @@ namespace JuegoDeLoteria.Redes
         public event Action? OnJuegoPausado;
         public event Action? OnJuegoReanudado;
         public event Action<int>? OnCambiarVelocidad;
-        public event Action<bool>? OnUnidoASala;
+
+        // CORRECCIÓN: Ahora el evento transporta todos los datos que envía el Hub
+        public event Action<string, bool, Dictionary<string, string>>? OnUnidoASala;
 
         public ClienteDeJuego()
         {
@@ -74,12 +77,12 @@ namespace JuegoDeLoteria.Redes
 
             _conexion.On<List<int>>("VerificarLoteria", (cartas) =>
                 OnVerificarLoteria?.Invoke(cartas));
-
-            _conexion.On<string>("JuegoTerminado", (ganador) =>
-                OnJuegoTerminado?.Invoke(ganador));
-
-            _conexion.On("JuegoReiniciado", () =>
-                OnJuegoReiniciado?.Invoke());
+            // QUITA el On sin parámetros y deja solo este:
+            _conexion.On<string>("JuegoIniciado", (formaDeGanar) =>
+            {
+                FormaDeGanar = formaDeGanar;
+                OnJuegoIniciado?.Invoke(formaDeGanar);
+            });
 
             _conexion.On<string>("Error", (mensaje) =>
                 OnError?.Invoke(mensaje));
@@ -100,14 +103,16 @@ namespace JuegoDeLoteria.Redes
                 OnConteoIniciado?.Invoke());
 
             _conexion.On<string, string>(EventosHub.MensajeRecibido, (nombre, mensaje) =>
-            OnMensajeRecibido?.Invoke(nombre, mensaje));
+                OnMensajeRecibido?.Invoke(nombre, mensaje));
 
+            // CORRECCIÓN: Invocamos el evento enviando los parámetros completos al formulario
             _conexion.On<string, bool, Dictionary<string, string>>(EventosHub.UnidoASala, (codigo, esHost, jugadores) =>
             {
                 EsHost = esHost;
                 JugadoresExistentes = jugadores;
-                OnUnidoASala?.Invoke(esHost);
+                OnUnidoASala?.Invoke(codigo, esHost, jugadores);
             });
+
             _conexion.On<bool, bool>(EventosHub.ActualizarConfiguracion, (permitirDobles, esManual) =>
             {
                 PermitirCartasDobles = permitirDobles;
@@ -126,6 +131,13 @@ namespace JuegoDeLoteria.Redes
 
             _conexion.On<string>(EventosHub.DesempateIniciado, (jugadores) =>
                 OnDesempateIniciado?.Invoke(jugadores));
+
+            _conexion.On<string, Dictionary<string, int>>("JuegoTerminado", (ganador, puntajes) =>
+            {
+                Puntajes = puntajes;
+                OnJuegoTerminado?.Invoke(ganador, puntajes);
+            });
+
             await _conexion.StartAsync();
         }
 
@@ -136,10 +148,10 @@ namespace JuegoDeLoteria.Redes
             await _conexion.InvokeAsync(EventosHub.UnirseASala, nombre, codigoSala);
         }
 
-        public async Task IniciarJuegoAsync(string formaDeGanar, int intervaloSegundos)
+        public async Task IniciarJuegoAsync(int intervaloSegundos, string formaDeGanar)
         {
             IntervaloSegundos = intervaloSegundos;
-            await _conexion.InvokeAsync("IniciarJuego", CodigoSala, formaDeGanar, intervaloSegundos);
+            await _conexion.InvokeAsync("IniciarJuego", CodigoSala, intervaloSegundos, formaDeGanar);
         }
 
         public async Task JugadorListoAsync()
@@ -182,6 +194,7 @@ namespace JuegoDeLoteria.Redes
         {
             await _conexion.InvokeAsync(EventosHub.ActualizarConfiguracion, CodigoSala, permitirCartasDobles);
         }
+
         public async Task ActualizarConfiguracionAsync(bool permitirCartasDobles, bool esManual)
         {
             await _conexion.InvokeAsync(EventosHub.ActualizarConfiguracion, CodigoSala, permitirCartasDobles, esManual);
@@ -206,6 +219,7 @@ namespace JuegoDeLoteria.Redes
         {
             await _conexion.InvokeAsync(EventosHub.CartaSolicitada, CodigoSala);
         }
+
         public async Task EnviarTableroAsync(List<int> idsCartas)
         {
             await _conexion.InvokeAsync(EventosHub.EnviarTablero, CodigoSala, idsCartas);

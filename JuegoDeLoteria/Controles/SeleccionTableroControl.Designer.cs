@@ -35,6 +35,8 @@
             pnlTablero = new FlowLayoutPanel();
             flpCartasDisponibles = new FlowLayoutPanel();
             label1 = new Label();
+            btnCargarTablero = new Button();
+            btnGuardarTablero = new Button();
             ((System.ComponentModel.ISupportInitialize)nudCantidadTableros).BeginInit();
             SuspendLayout();
             // 
@@ -109,11 +111,39 @@
             label1.TabIndex = 6;
             label1.Text = "Selecciona las cartas que deseas en tu tablero, así como la cantidad de Tableros que desees, cuando acabes selecciona Confirmar\r\n";
             // 
+            // btnCargarTablero
+            // 
+            btnCargarTablero.BackColor = Color.Black;
+            btnCargarTablero.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnCargarTablero.ForeColor = Color.White;
+            btnCargarTablero.Location = new Point(25, 518);
+            btnCargarTablero.Name = "btnCargarTablero";
+            btnCargarTablero.Size = new Size(163, 52);
+            btnCargarTablero.TabIndex = 7;
+            btnCargarTablero.Text = "Cargar";
+            btnCargarTablero.UseVisualStyleBackColor = false;
+            btnCargarTablero.Click += btnCargarTablero_Click;
+            // 
+            // btnGuardarTablero
+            // 
+            btnGuardarTablero.BackColor = Color.Black;
+            btnGuardarTablero.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnGuardarTablero.ForeColor = Color.White;
+            btnGuardarTablero.Location = new Point(25, 586);
+            btnGuardarTablero.Name = "btnGuardarTablero";
+            btnGuardarTablero.Size = new Size(163, 52);
+            btnGuardarTablero.TabIndex = 8;
+            btnGuardarTablero.Text = "Guardar";
+            btnGuardarTablero.UseVisualStyleBackColor = false;
+            btnGuardarTablero.Click += btnGuardarTablero_Click;
+            // 
             // SeleccionTableroControl
             // 
             AutoScaleDimensions = new SizeF(120F, 120F);
             AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = Color.Black;
+            Controls.Add(btnGuardarTablero);
+            Controls.Add(btnCargarTablero);
             Controls.Add(label1);
             Controls.Add(flpCartasDisponibles);
             Controls.Add(pnlTablero);
@@ -137,5 +167,7 @@
         private FlowLayoutPanel pnlTablero;
         private FlowLayoutPanel flpCartasDisponibles;
         private Label label1;
+        private Button btnCargarTablero;
+        private Button btnGuardarTablero;
     }
 }

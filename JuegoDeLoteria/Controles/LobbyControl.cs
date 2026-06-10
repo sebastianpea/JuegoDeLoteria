@@ -5,124 +5,158 @@ namespace JuegoDeLoteria.Controles
 {
     public partial class LobbyControl : UserControl
     {
-        public event Action? OnJuegoIniciado;
+        public event Action? OnJuegoIniciado; 
 
         public LobbyControl()
         {
-            InitializeComponent();
-            CargarFormasDeGanar();
-            ConfigurarIntervalo();
-            RegistrarEventos();
+            InitializeComponent(); 
+            CargarFormasDeGanar(); 
+            ConfigurarIntervalo(); 
         }
 
         private void RegistrarEventos()
         {
+            MainForm.Cliente.OnJugadorUnido += OnJugadorUnido; 
+            MainForm.Cliente.OnJugadorSalio += OnJugadorSalio; 
+            MainForm.Cliente.OnJuegoIniciado += OnJuegoIniciado_Recibido; 
+            MainForm.Cliente.OnNuevoHost += OnNuevoHost; 
+        }
+        public void InicializarLobby()
+        {
+            MainForm.Cliente.OnJugadorUnido -= OnJugadorUnido;
+            MainForm.Cliente.OnJugadorSalio -= OnJugadorSalio;
+            MainForm.Cliente.OnJuegoIniciado -= OnJuegoIniciado_Recibido;
+            MainForm.Cliente.OnNuevoHost -= OnNuevoHost;
+
             MainForm.Cliente.OnJugadorUnido += OnJugadorUnido;
             MainForm.Cliente.OnJugadorSalio += OnJugadorSalio;
             MainForm.Cliente.OnJuegoIniciado += OnJuegoIniciado_Recibido;
             MainForm.Cliente.OnNuevoHost += OnNuevoHost;
-        }
 
-        public void InicializarLobby()
-        {
-            lstJugadores.Items.Clear();
-            lblCodigoSala.Text = "Sala: " + MainForm.Cliente.CodigoSala;
-
-            // En lugar de leer EsHost directo, espera el evento si aún no llegó
-            MainForm.Cliente.OnUnidoASala += OnUnidoASala_Handler;
             MostrarControlesHost(MainForm.Cliente.EsHost);
-
-            lstJugadores.Items.Add("(Tú) " + MainForm.Cliente.NombreJugador);
-            foreach (var jugador in MainForm.Cliente.JugadoresExistentes)
-                lstJugadores.Items.Add(jugador.Value);
-
+            ActualizarListaJugadores();
             chatControl1.InicializarChat();
         }
 
-        private void OnUnidoASala_Handler(bool esHost)
+        private void ActualizarListaJugadores()
         {
-            MainForm.Cliente.OnUnidoASala -= OnUnidoASala_Handler;
-            this.Invoke(() => MostrarControlesHost(esHost));
+            lstJugadores.Items.Clear(); 
+            var puntajes = MainForm.Cliente.Puntajes; 
+
+            lstJugadores.Items.Add(FormatearJugador("(Tú) " + MainForm.Cliente.NombreJugador, puntajes)); 
+
+            foreach (var jugador in MainForm.Cliente.JugadoresExistentes)
+                lstJugadores.Items.Add(FormatearJugador(jugador.Value, puntajes)); 
+        }
+
+        private string FormatearJugador(string nombre, Dictionary<string, int> puntajes)
+        {
+            string nombreLimpio = nombre.Replace("(Tú) ", ""); 
+            int puntos = puntajes.ContainsKey(nombreLimpio) ? puntajes[nombreLimpio] : 0;
+            return $"{nombre} - {puntos}pts";
         }
 
         private void CargarFormasDeGanar()
         {
-            cmbFormaDeGanar.Items.Clear();
+            cmbFormaDeGanar.Items.Clear(); 
             foreach (FormasdeGanar forma in Enum.GetValues(typeof(FormasdeGanar)))
-                cmbFormaDeGanar.Items.Add(forma);
-            cmbFormaDeGanar.SelectedIndex = 0;
+                cmbFormaDeGanar.Items.Add(forma); 
+            cmbFormaDeGanar.SelectedIndex = 0; 
         }
 
         private void ConfigurarIntervalo()
         {
-            nudIntervalo.Minimum = 1;
+            nudIntervalo.Minimum = 1; 
             nudIntervalo.Maximum = 30;
             nudIntervalo.Value = 5;
         }
+
         private async void btnIniciarJuego_Click(object sender, EventArgs e)
         {
-            string formaDeGanar = cmbFormaDeGanar.SelectedItem!.ToString()!;
-            int intervalo = (int)nudIntervalo.Value;
-            await MainForm.Cliente.IniciarJuegoAsync(formaDeGanar, intervalo);
+            try
+            {
+                btnIniciarJuego.Enabled = false;
+                int intervalo = (int)nudIntervalo.Value;
+                string formaDeGanar = cmbFormaDeGanar.SelectedItem?.ToString() ?? "TableroCompleto";
+                await MainForm.Cliente.IniciarJuegoAsync(intervalo, formaDeGanar);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al iniciar el juego: {ex.Message}", "Error de Conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                btnIniciarJuego.Enabled = true;
+            }
         }
 
         private void OnJugadorUnido(string id, string nombre)
         {
-            this.Invoke(() => lstJugadores.Items.Add(nombre));
+            this.Invoke(() =>
+            {
+                MainForm.Cliente.JugadoresExistentes[id] = nombre;
+                ActualizarListaJugadores();
+            });
         }
 
         private void OnJugadorSalio(string id)
         {
             this.Invoke(() =>
             {
-                if (lstJugadores.Items.Contains(id))
-                    lstJugadores.Items.Remove(id);
+                if (MainForm.Cliente.JugadoresExistentes.ContainsKey(id)) 
+                {
+                    MainForm.Cliente.JugadoresExistentes.Remove(id); 
+                }
+                ActualizarListaJugadores();
             });
         }
 
         private void OnJuegoIniciado_Recibido(string formaDeGanar)
         {
-            this.Invoke(() => OnJuegoIniciado?.Invoke());
+            if (this.InvokeRequired) 
+            {
+                this.BeginInvoke(new Action(() => OnJuegoIniciado?.Invoke()));
+            }
+            else
+            {
+                OnJuegoIniciado?.Invoke(); 
+            }
         }
 
         private void OnNuevoHost(string id)
         {
-            this.Invoke(() =>
+            this.Invoke(() => 
             {
                 if (id == MainForm.Cliente.ConnectionId)
                 {
-                    MainForm.Cliente.EsHost = true; // necesitas hacer EsHost setteable
-                    MostrarControlesHost(true);
+                    MainForm.Cliente.EsHost = true; 
+                    MostrarControlesHost(true); 
                 }
             });
         }
+
         private void lblEsperando_Click(object sender, EventArgs e)
         {
-
         }
+
         private void MostrarControlesHost(bool esHost)
         {
-            btnIniciarJuego.Visible = esHost;
-            cmbFormaDeGanar.Visible = esHost;
-            nudIntervalo.Visible = esHost;
+            btnIniciarJuego.Visible = esHost; 
+            nudIntervalo.Visible = esHost; 
             chkCartasDobles.Visible = esHost;
-            chkManual.Visible = esHost;
-            lblEsperando.Visible = !esHost;
+            chkManual.Visible = esHost; 
+            lblEsperando.Visible = !esHost; 
         }
 
         private async void chkCartasDobles_CheckedChanged(object sender, EventArgs e)
         {
-            await MainForm.Cliente.ActualizarConfiguracionAsync(
+            await MainForm.Cliente.ActualizarConfiguracionAsync( 
                 chkCartasDobles.Checked,
-                chkManual.Checked);
+                chkManual.Checked); 
         }
 
         private async void chkManual_CheckedChanged(object sender, EventArgs e)
         {
-            await MainForm.Cliente.ActualizarConfiguracionAsync(
-                chkCartasDobles.Checked,
-                chkManual.Checked);
+            await MainForm.Cliente.ActualizarConfiguracionAsync( 
+                chkCartasDobles.Checked, 
+                chkManual.Checked); 
         }
     }
 }
-

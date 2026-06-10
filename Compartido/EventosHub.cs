@@ -40,5 +40,6 @@
         public const string DesempateIniciado = "DesempateIniciado";
         public const string DesempateTerminado = "DesempateTerminado";
         public const string IniciarDesempate = "IniciarDesempate";
+        public const string JuegoTerminadoMultiple = "JuegoTerminadoMultiple";
     }
 }

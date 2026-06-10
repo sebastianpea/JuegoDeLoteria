@@ -89,14 +89,13 @@ namespace Servidor.Hubs
 
             await Clients.OthersInGroup(codigoSala)
                 .SendAsync(EventosHub.JugadorUnido, Context.ConnectionId, nombre);
+            await Clients.Caller.SendAsync("RecibirUnidoConExito");
         }
 
-        public async Task IniciarJuego(string codigoSala, string formaDeGanar, int intervaloSegundos)
+        public async Task IniciarJuego(string codigoSala, int intervaloSegundos, string formaDeGanar)
         {
             if (!salas.ContainsKey(codigoSala)) return;
-
             Sala sala = salas[codigoSala];
-
             if (sala.HostId != Context.ConnectionId)
             {
                 await Clients.Caller.SendAsync(EventosHub.Error, "Solo el host puede iniciar el juego.");
@@ -108,8 +107,6 @@ namespace Servidor.Hubs
             sala.JugadoresListos.Clear();
             sala.IntervaloSegundos = intervaloSegundos;
             sala.Mazo.Barajar();
-
-            Console.WriteLine($"Juego iniciado en sala {codigoSala} con intervalo {intervaloSegundos}s");
 
             await Clients.Group(codigoSala).SendAsync(EventosHub.JuegoIniciado, formaDeGanar);
         }
@@ -316,16 +313,12 @@ namespace Servidor.Hubs
             {
                 if (sala.EnDesempate)
                 {
-                    // Ya hay alguien en desempate — agregar a la lista
                     sala.JugadoresEnDesempate.Add(Context.ConnectionId);
-
                     if (sala.JugadoresEnDesempate.Count >= 2)
                         await ResolverDesempate(sala, codigoSala);
-
                     return;
                 }
 
-                // Primer reclamo válido — esperar 3 segundos por si alguien más reclama
                 sala.JugadoresEnDesempate.Add(Context.ConnectionId);
                 sala.EnDesempate = true;
 
@@ -341,13 +334,17 @@ namespace Servidor.Hubs
 
                     if (sala.JugadoresEnDesempate.Count == 1)
                     {
-                        // Solo uno reclamó — gana directamente
+                        string ganadorId = sala.JugadoresEnDesempate[0];
+                        sala.Puntajes.TryGetValue(ganadorId, out int puntajeActual);
+                        sala.Puntajes[ganadorId] = puntajeActual + 1;
                         sala.EnJuego = false;
                         sala.EnDesempate = false;
-                        string ganador = sala.Jugadores[sala.JugadoresEnDesempate[0]];
+                        string ganador = sala.Jugadores[ganadorId];
                         sala.JugadoresEnDesempate.Clear();
                         await _hubContext.Clients.Group(codigoSala)
-                            .SendAsync(EventosHub.JuegoTerminado, ganador);
+                            .SendAsync(EventosHub.JuegoTerminado, ganador, sala.Puntajes.ToDictionary(
+                                p => sala.Jugadores[p.Key],
+                                p => p.Value));
                     }
                     else
                     {
@@ -386,12 +383,18 @@ namespace Servidor.Hubs
             sala.EnDesempate = false;
             sala.JugadoresEnDesempate.Clear();
 
-            string ganador = ganadorId != null
-                ? sala.Jugadores[ganadorId]
-                : "Nadie ganó";
+            if (ganadorId != null)
+            {
+                sala.Puntajes.TryGetValue(ganadorId, out int puntajeActual);
+                sala.Puntajes[ganadorId] = puntajeActual + 1;
+            }
+
+            string ganador = ganadorId != null ? sala.Jugadores[ganadorId] : "Nadie ganó";
 
             await _hubContext.Clients.Group(codigoSala)
-                .SendAsync(EventosHub.JuegoTerminado, ganador);
+                .SendAsync(EventosHub.JuegoTerminado, ganador, sala.Puntajes.ToDictionary(
+                    p => sala.Jugadores[p.Key],
+                    p => p.Value));
         }
         public async Task EnviarTablero(string codigoSala, List<int> idsCartas)
         {

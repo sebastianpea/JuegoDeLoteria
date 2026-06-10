@@ -142,8 +142,11 @@ namespace JuegoDeLoteria.Controles
 
         private bool CartaYaEnTablero(Carta carta)
         {
-            if (MainForm.Cliente.PermitirCartasDobles) return false;
-            return _cartasEnCeldas.Values.Any(c => c.Id == carta.Id);
+            if (!MainForm.Cliente.PermitirCartasDobles)
+                return _cartasEnCeldas.Values.Any(c => c.Id == carta.Id);
+
+            int count = _cartasEnCeldas.Values.Count(c => c.Id == carta.Id);
+            return count >= 2;
         }
 
         private void MarcarCartaUsada(Carta carta)
@@ -292,6 +295,85 @@ namespace JuegoDeLoteria.Controles
 
                 OnTablerosSeleccionados?.Invoke(_tablerosSeleccionados);
                 await MainForm.Cliente.JugadorListoAsync();
+            }
+        }
+        private void btnGuardarTablero_Click(object sender, EventArgs e)
+        {
+            if (_cartasEnCeldas.Count != 16)
+            {
+                MessageBox.Show("El tablero debe estar completo para guardarlo.");
+                return;
+            }
+
+            using var dialog = new SaveFileDialog();
+            dialog.Filter = "Tablero JSON|*.json";
+            dialog.Title = "Guardar tablero";
+            if (dialog.ShowDialog() != DialogResult.OK) return;
+
+            var data = new List<object>();
+            for (int fila = 0; fila < 4; fila++)
+                for (int col = 0; col < 4; col++)
+                {
+                    var carta = _cartasEnCeldas[(fila, col)];
+                    data.Add(new { fila, col, carta.Id, carta.Nombre });
+                }
+
+            string json = System.Text.Json.JsonSerializer.Serialize(data,
+                new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(dialog.FileName, json);
+            MessageBox.Show("Tablero guardado.");
+        }
+
+        private void btnCargarTablero_Click(object sender, EventArgs e)
+        {
+            using var dialog = new OpenFileDialog();
+            dialog.Filter = "Tablero JSON|*.json";
+            dialog.Title = "Cargar tablero";
+            if (dialog.ShowDialog() != DialogResult.OK) return;
+
+            try
+            {
+                string json = File.ReadAllText(dialog.FileName);
+                var data = System.Text.Json.JsonSerializer.Deserialize<List<System.Text.Json.JsonElement>>(json);
+                if (data == null || data.Count != 16)
+                {
+                    MessageBox.Show("El archivo no es válido.");
+                    return;
+                }
+
+                DibujarTableroVacio();
+                foreach (Control control in flpCartasDisponibles.Controls)
+                {
+                    control.BackColor = Color.Transparent;
+                    control.Enabled = true;
+                }
+
+                var todasLasCartas = _mazo.ObtenerTodasLasCartas();
+
+                foreach (var item in data)
+                {
+                    int fila = item.GetProperty("fila").GetInt32();
+                    int col = item.GetProperty("col").GetInt32();
+                    int id = item.GetProperty("Id").GetInt32();
+
+                    var carta = todasLasCartas.FirstOrDefault(c => c.Id == id);
+                    if (carta == null) continue;
+
+                    var celda = _celdas[fila, col];
+                    if (celda == null) continue;
+
+                    _cartasEnCeldas[(fila, col)] = carta;
+                    celda.Image = carta.ObtenerImagen();
+                    celda.BackColor = Color.LightGoldenrodYellow;
+                    MarcarCartaUsada(carta);
+                }
+
+                VerificarTableroCompleto();
+                MessageBox.Show("Tablero cargado.");
+            }
+            catch
+            {
+                MessageBox.Show("Error al leer el archivo.");
             }
         }
     }

@@ -1,213 +1,179 @@
-# 🎴 Juego de Lotería Multijugador
+# 🎴 Lotería en Red
 
-Juego de Lotería mexicana multijugador en red local, desarrollado en C# con WinForms y SignalR. Proyecto escolar desarrollado con principios de Clean Code y Programación Orientada a Objetos.
-
----
-
-## 📋 Requisitos
-
-- Windows 10 o superior
-- .NET 8.0 SDK
-- Visual Studio 2022
-- Paquetes NuGet:
-  - `Microsoft.AspNetCore.SignalR` (Servidor)
-  - `Microsoft.AspNetCore.SignalR.Client` (Cliente)
-  - `NAudio` (Cliente)
+Juego de Lotería mexicana multijugador en tiempo real, construido con **C# / Windows Forms** en el cliente y **ASP.NET Core + SignalR** en el servidor.
 
 ---
 
-## 🏗️ Estructura del Proyecto
+## 📋 Descripción
 
-La solución está compuesta por tres proyectos:
+Lotería en Red es una implementación digital del clásico juego de mesa mexicano. Los jugadores se conectan a una sala mediante un código, arman su propio tablero eligiendo sus cartas, y compiten en tiempo real mientras el servidor va "cantando" las cartas del mazo. El primero en completar el patrón de victoria gana.
+
+---
+
+## ✨ Características
+
+- **Multijugador en red local** — hasta N jugadores en la misma sala mediante SignalR
+- **Tablero personalizable** — arrastra y suelta las 54 cartas clásicas para armar tu tablero, o usa el botón aleatorio
+- **Guardar/cargar tableros** — exporta e importa tu tablero favorito en formato JSON
+- **Múltiples tableros por jugador** — juega con 1 a 4 tableros simultáneamente
+- **9 formas de ganar** configurables por el host:
+  - Tablero completo, cualquier fila, cualquier columna, cualquier diagonal
+  - Cuatro esquinas, cuatro en el centro, forma de X, forma de L
+  - Cualquier fila/columna/diagonal
+- **Modo manual** — el host controla cuándo se canta cada carta
+- **Modo automático** — las cartas se cantan solas con intervalo configurable (1–30 segundos)
+- **Pausa y control de velocidad** en tiempo real (solo host)
+- **Sistema de desempate automático** cuando varios jugadores cantan Lotería al mismo tiempo
+- **Puntajes acumulados** entre rondas
+- **Chat integrado** en el lobby y durante la partida
+- **Audio** — narración de cada carta al estilo Undertale
+- **Tutorial interactivo** con diálogo animado al iniciar
+- **Cartas dobles** — opción para permitir repetir cartas en el tablero
+
+---
+
+## 🗂️ Estructura del Proyecto
 
 ```
-JuegoDeLoteria.sln
-├── Compartido/              → Biblioteca de clases compartida
-│   ├── CartaInfo.cs         → Información básica de carta (Id, Nombre)
-│   ├── MazoCompartido.cs    → Mazo del servidor con las 54 cartas
-│   └── EventosHub.cs        → Constantes de eventos SignalR
+Solución
+├── Servidor/
+│   └── Hubs/
+│       ├── HubDeJuego.cs       # Hub principal de SignalR (lógica del servidor)
+│       └── Sala.cs             # Estado de cada sala de juego
 │
-├── Servidor/                → Aplicación ASP.NET Core
-│   ├── Hubs/
-│   │   ├── HubDeJuego.cs    → Hub SignalR con toda la lógica del servidor
-│   │   └── Sala.cs          → Estado de cada sala de juego
-│   └── Program.cs           → Configuración del servidor en puerto 5000
+├── Compartido/
+│   ├── CartaInfo.cs            # Modelo de carta para comunicación cliente-servidor
+│   ├── EventosHub.cs           # Constantes de eventos SignalR
+│   └── MazoCompartido.cs       # Mazo de 54 cartas para el servidor
 │
-└── JuegoDeLoteria/          → Aplicación WinForms (cliente)
-    ├── Controles/           → UserControls (pantallas del juego)
-    │   ├── MenuControl
-    │   ├── ConfiguracionControl
-    │   ├── DialogControl
-    │   ├── UnirseControl
-    │   ├── LobbyControl
-    │   ├── SeleccionTableroControl
-    │   ├── JuegoControl
-    │   ├── PostJuegoControl
-    │   ├── TableroControl
-    │   └── ChatControl
+└── Cliente (JuegoDeLoteria)/
     ├── Forms/
-    │   └── MainForm.cs      → Ventana principal (contenedor de controles)
+    │   └── MainForm.cs         # Formulario principal, maneja navegación entre pantallas
+    ├── Controles/
+    │   ├── MenuControl         # Pantalla de inicio
+    │   ├── DialogoControl      # Tutorial con diálogo animado
+    │   ├── UnirseControl       # Pantalla para conectarse a una sala
+    │   ├── LobbyControl        # Sala de espera y configuración
+    │   ├── SeleccionTableroControl  # Armar el tablero antes de jugar
+    │   ├── JuegoControl        # Pantalla principal durante la partida
+    │   ├── PostJuegoControl    # Resultados y cartas no llamadas
+    │   ├── TableroControl      # Componente visual de un tablero individual
+    │   ├── ChatControl         # Chat en tiempo real
+    │   └── ConfiguracionControl # Ajuste de volumen
     ├── Juego/
-    │   ├── Carta.cs         → Carta con imagen embebida
-    │   ├── MazoDeCartas.cs  → Mazo completo del cliente
-    │   ├── Tablero.cs       → Tablero 4x4 con lógica de victoria
-    │   └── FormasdeGanar.cs → Enum con 9 condiciones de victoria
-    ├── Managers/
-    │   └── AudioManager.cs  → Manejo de música con playlist
+    │   ├── Carta.cs            # Modelo de carta con imagen
+    │   ├── MazoDeCartas.cs     # Mazo con las 54 cartas clásicas
+    │   ├── Tablero.cs          # Lógica de marcado y verificación de victoria
+    │   └── FormasdeGanar.cs    # Enum con los 9 patrones de victoria
     └── Redes/
-        └── ClienteDeJuego.cs → Cliente SignalR con eventos y acciones
+        └── ClienteDeJuego.cs   # Cliente SignalR, gestiona conexión y eventos
 ```
 
 ---
 
-## 🎮 Flujo del Juego
+## 🚀 Requisitos
+
+| Componente | Versión mínima |
+|---|---|
+| .NET | 8.0 |
+| Windows | 10 / 11 (cliente WinForms) |
+| ASP.NET Core | 8.0 (servidor) |
+| SignalR | incluido en ASP.NET Core 8 |
+
+---
+
+## ⚙️ Instalación y Ejecución
+
+### 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/tu-usuario/loteria-en-red.git
+cd loteria-en-red
+```
+
+### 2. Ejecutar el servidor
+
+```bash
+cd Servidor
+dotnet run
+```
+
+El servidor escucha en `http://0.0.0.0:5000` por defecto.
+
+### 3. Ejecutar el cliente
+
+```bash
+cd Cliente
+dotnet run
+```
+
+O abre la solución en Visual Studio y ejecuta el proyecto cliente.
+
+### 4. Conectarse
+
+1. En la pantalla de inicio, haz clic en **Jugar**
+2. Ingresa tu nombre, el código de sala que quieras usar y la IP del servidor
+3. El primero en unirse a una sala se convierte en **host**
+4. El host configura las opciones y hace clic en **Iniciar Juego**
+
+---
+
+## 🎮 Cómo Jugar
+
+1. **Unirse** — ingresa nombre, código de sala e IP del servidor
+2. **Lobby** — espera a que todos estén listos; el host elige forma de ganar, intervalo y modo
+3. **Armar tablero** — arrastra las cartas que quieras a tu tablero 4×4 (o usa Aleatorio). Puedes guardar tu tablero para cargarlo en partidas futuras
+4. **Jugar** — cuando se cante una carta, haz clic sobre ella en tu tablero para marcarla
+5. **¡Lotería!** — cuando creas tener el patrón ganador, presiona el botón **Lotería**. El servidor verifica tu tablero; si es válido, ganas. Si hay empate, se desempata automáticamente
+
+---
+
+## 🏆 Formas de Ganar
+
+| Forma | Descripción |
+|---|---|
+| `TableroCompleto` | Las 16 cartas marcadas |
+| `CualquierFila` | Una fila completa |
+| `CualquierColumna` | Una columna completa |
+| `CualquierDiagonal` | Una diagonal completa |
+| `CualquierFilaColumnaDiagonal` | Cualquiera de las tres anteriores |
+| `CuatroEsquinas` | Las 4 esquinas del tablero |
+| `CuatroEnElCentro` | El bloque 2×2 central |
+| `FormaDeX` | Ambas diagonales simultáneamente |
+| `FormaDeL` | Primera columna + última fila (y sus variantes en espejo) |
+
+---
+
+## 🔧 Configuración del Host
+
+Durante el lobby, el host puede ajustar:
+
+- **Forma de ganar** — el patrón que decide quién gana
+- **Intervalo** — segundos entre carta y carta (1–30)
+- **Cartas dobles** — permite repetir cartas en el tablero
+- **Modo manual** — el host controla manualmente cuándo se canta la siguiente carta
+
+Durante la partida (solo host, modo automático):
+
+- **Pausar / Reanudar** la partida
+- **Aumentar / Reducir** la velocidad con los botones `+` y `−`
+
+---
+
+## 📡 Arquitectura de Red
+
+El proyecto usa **ASP.NET Core SignalR** para comunicación bidireccional en tiempo real.
 
 ```
-Menú Principal
-    ↓
-Diálogo Tutorial (¿Conoces la Lotería?)
-    ↓
-Pantalla de Unirse (Nombre, Código de sala, IP del servidor)
-    ↓
-Lobby (Lista de jugadores, configuración del host)
-    ↓
-Selección de Tablero (Aleatorio o manual con drag & drop)
-    ↓
-Juego (Cartas llamadas, fichas, chat, ¡Lotería!)
-    ↓
-Post Juego (Ganador + cartas que no se llamaron)
+Cliente A ──┐
+Cliente B ──┼──► HubDeJuego (SignalR) ──► Sala (estado en memoria)
+Cliente C ──┘
 ```
 
----
+Todos los eventos están definidos como constantes en `EventosHub.cs` (proyecto Compartido) para evitar strings sueltos tanto en cliente como servidor.
 
-## 🌐 Configuración de Red
-
-El juego funciona en red local (hotspot o WiFi compartido):
-
-1. Una PC ejecuta el proyecto **Servidor**
-2. Esa PC abre `cmd` y ejecuta `ipconfig` para obtener su IP (ej. `192.168.1.5`)
-3. Todos los jugadores se conectan a la misma red
-4. Cada jugador ejecuta **JuegoDeLoteria** e ingresa la IP del servidor
-5. La PC servidor puede jugar usando `localhost` como IP
-
----
-
-## 🚀 Cómo Ejecutar
-
-### Opción 1 — Visual Studio
-1. Abrir `JuegoDeLoteria.sln`
-2. Click derecho en la Solución → Propiedades → Proyecto de inicio múltiple
-3. Establecer `Servidor` y `JuegoDeLoteria` en **Iniciar**
-4. Presionar **F5**
-
-### Opción 2 — Dos instancias para pruebas
-1. Ejecutar `Servidor` desde Visual Studio
-2. Navegar a `JuegoDeLoteria/bin/Debug/net8.0-windows/`
-3. Abrir `JuegoDeLoteria.exe` dos veces
-4. Usar `localhost` como IP en ambas instancias
-
----
-
-## 🏆 Condiciones de Victoria
-
-| Condición | Descripción |
-|---|---|
-| Tablero Completo | Las 16 casillas marcadas |
-| Cualquier Fila | Una fila completa |
-| Cualquier Columna | Una columna completa |
-| Cualquier Diagonal | Una diagonal completa |
-| Fila, Columna o Diagonal | Cualquiera de las tres |
-| Cuatro Esquinas | Las 4 esquinas del tablero |
-| Cuatro en el Centro | El cuadro 2x2 del centro |
-| Forma de X | Las dos diagonales completas |
-| Forma de L | Cualquier rotación de L |
-
----
-
-## 🃏 Mecánicas del Juego
-
-### Tablero
-- Cada jugador puede tener de 1 a 4 tableros simultáneos
-- Los tableros se seleccionan antes de cada partida
-- Se pueden elegir aleatoriamente o de forma manual con drag & drop
-- Las cartas llamadas se resaltan automáticamente en el tablero
-
-### Fichas
-- Se arrastran desde el panel de fichas hacia las casillas del tablero
-- Al colocar una ficha, la imagen cambia a la versión con ficha
-- Se puede quitar una ficha haciendo click sobre ella
-
-### Lotería
-- El jugador presiona **¡Lotería!** cuando cree tener la condición de victoria
-- El servidor envía las cartas mencionadas al cliente
-- El cliente verifica localmente si la condición es válida
-- Si es válida, se notifica a todos los jugadores
-- Si no es válida, el jugador puede seguir jugando
-
-### Chat
-- Disponible durante el juego y en el lobby
-- Los mensajes se muestran con el nombre del jugador
-- Se puede enviar con el botón **Enviar** o presionando **Enter**
-
-### Post Juego
-- Muestra el nombre del ganador
-- Muestra todas las cartas que no fueron llamadas durante la partida
-- El host puede iniciar una nueva partida o salir
-
----
-
-## 🔌 Arquitectura de Red (SignalR)
-
-### Servidor → Cliente
-| Evento | Descripción |
-|---|---|
-| `JugadorUnido` | Nuevo jugador en la sala |
-| `JugadorSalio` | Jugador desconectado |
-| `NuevoHost` | El host cambió |
-| `JuegoIniciado` | El host inició la partida |
-| `ActualizarListos` | Cuántos jugadores están listos |
-| `ConteoIniciado` | Todos listos, empiezan las cartas |
-| `CartaMencionada` | Nueva carta llamada |
-| `VerificarLoteria` | Lista de cartas para verificar |
-| `JuegoTerminado` | Partida terminada con ganador |
-| `CartasRestantes` | Cartas no llamadas al final |
-| `MensajeRecibido` | Mensaje de chat |
-
-### Cliente → Servidor
-| Método | Descripción |
-|---|---|
-| `UnirseASala` | Unirse o crear sala |
-| `IniciarJuego` | Host inicia la partida |
-| `JugadorListo` | Jugador terminó de elegir tablero |
-| `ReclamarLoteria` | Jugador reclama victoria |
-| `ResultadoLoteria` | Resultado de la verificación |
-| `EnviarMensaje` | Mensaje de chat |
-| `JugarDeNuevo` | Host reinicia la partida |
-| `ObtenerCartasRestantes` | Solicitar cartas no llamadas |
-
----
-
-## 🛠️ Principios Aplicados
-
-### Clean Code
-- **Single Responsibility** — cada clase tiene una sola responsabilidad
-- **Open/Closed** — nuevas condiciones de victoria se agregan sin modificar existentes
-- **DRY** — código compartido en el proyecto `Compartido`
-- **Nombres significativos** — clases, métodos y variables en español descriptivo
-- **Manejo de excepciones específicas** — se capturan `HttpRequestException` y `TaskCanceledException` en lugar de `Exception` general
-
-### Programación Orientada a Objetos
-- **Encapsulación** — propiedades con `private set`, campos privados
-- **Abstracción** — `ClienteDeJuego` oculta la complejidad de SignalR
-- **Separación de capas** — servidor, cliente y compartido completamente separados
-- **Eventos** — comunicación entre capas sin acoplamiento directo
-- **Constantes centralizadas** — `EventosHub` evita magic strings
-
----
-
-## 🎵 Audio
-
-- La música se reproduce en loop automáticamente
-- Soporta playlist con múltiples canciones MP3
-- El volumen se controla desde **Configuración**
-- Los archivos de música van en la carpeta `Musica/` junto al ejecutable
+## 📝 Notas
+- El estado de las salas se guarda **en memoria** del servidor; si el servidor se reinicia, las partidas activas se pierden
+- Si el host se desconecta, el rol pasa automáticamente al siguiente jugador en la sala
+- La verificación de Lotería siempre ocurre en el **cliente** y el resultado se reporta al servidor para validación y desempate
+- Los tableros se envían al servidor antes de iniciar para permitir el desempate por carta más reciente

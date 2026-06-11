@@ -12,15 +12,18 @@ namespace JuegoDeLoteria.Controles
         {
             InitializeComponent();
             _tablero = tablero;
+            _celdas = new PictureBox[tablero.Tamaño, tablero.Tamaño];
+            _panelesCeldas = new Panel[tablero.Tamaño, tablero.Tamaño];
             ConfigurarTablero();
             DibujarCeldas();
         }
 
         private void ConfigurarTablero()
         {
-            int celdaSize = 80;
+            int n = _tablero.Tamaño;
+            int celdaSize = Math.Min(80, 340 / n); // escala según tamaño
             int padding = 5;
-            int totalSize = (celdaSize + padding) * 4 + padding;
+            int totalSize = (celdaSize + padding) * n + padding;
             this.Size = new Size(totalSize, totalSize);
             this.BackColor = Color.SaddleBrown;
             this.Padding = new Padding(padding);
@@ -28,14 +31,15 @@ namespace JuegoDeLoteria.Controles
 
         private void DibujarCeldas()
         {
-            int celdaSize = 80;
+            int n = _tablero.Tamaño;
+            int celdaSize = Math.Min(80, 340 / n);
             int padding = 5;
 
-            for (int fila = 0; fila < 4; fila++)
+            for (int fila = 0; fila < n; fila++)
             {
-                for (int col = 0; col < 4; col++)
+                for (int col = 0; col < n; col++)
                 {
-                    var carta = _tablero.Cartas[fila * 4 + col];
+                    var carta = _tablero.Cartas[fila * n + col];
 
                     var panel = new Panel();
                     panel.Size = new Size(celdaSize, celdaSize);
@@ -99,9 +103,17 @@ namespace JuegoDeLoteria.Controles
         private void QuitarFicha(int fila, int col)
         {
             _tablero.QuitarFicha(fila, col);
-            var carta = _tablero.Cartas[fila * 4 + col];
+            var carta = _tablero.Cartas[fila * _tablero.Tamaño + col];
+
+            // Restaurar imagen original sin tinte
             _celdas[fila, col].Image = carta.ObtenerImagen();
-            _panelesCeldas[fila, col].BackColor = Color.Cornsilk;
+
+            var panel = _panelesCeldas[fila, col];
+            panel.BackColor = Color.Cornsilk;
+
+            foreach (Control hijo in panel.Controls)
+                if (hijo is Label lbl)
+                    lbl.BackColor = Color.Cornsilk;
         }
 
         private Image? ObtenerImagenConFicha(string nombreRecurso)
@@ -126,15 +138,18 @@ namespace JuegoDeLoteria.Controles
 
         public void MarcarCartaMencionada(int cartaId)
         {
-            for (int fila = 0; fila < 4; fila++)
+            for (int fila = 0; fila < _tablero.Tamaño; fila++)
             {
-                for (int col = 0; col < 4; col++)
+                for (int col = 0; col < _tablero.Tamaño; col++)
                 {
-                    var carta = _tablero.Cartas[fila * 4 + col];
-                    if (carta.Id == cartaId)
+                    if (_tablero.Cartas[fila * _tablero.Tamaño + col].Id == cartaId)
                     {
                         var panel = _panelesCeldas[fila, col];
                         panel.BackColor = Color.LightYellow;
+
+                        foreach (Control hijo in panel.Controls)
+                            if (hijo is Label lbl)
+                                lbl.BackColor = Color.LightYellow;
                     }
                 }
             }
@@ -142,7 +157,26 @@ namespace JuegoDeLoteria.Controles
 
         public void MarcarCeldaInvalida(int fila, int col)
         {
-            _panelesCeldas[fila, col].BackColor = Color.IndianRed;
+            var panel = _panelesCeldas[fila, col];
+            panel.BackColor = Color.IndianRed;
+
+            var pb = _celdas[fila, col];
+            if (pb.Image != null)
+                pb.Image = AplicarTinte(pb.Image, Color.Red, 150);
+
+            foreach (Control hijo in panel.Controls)
+                if (hijo is Label lbl)
+                    lbl.BackColor = Color.IndianRed;
+        }
+
+        private Image AplicarTinte(Image imagenOriginal, Color tinte, int alfa = 120)
+        {
+            var bitmap = new Bitmap(imagenOriginal.Width, imagenOriginal.Height);
+            using var g = Graphics.FromImage(bitmap);
+            g.DrawImage(imagenOriginal, 0, 0, imagenOriginal.Width, imagenOriginal.Height);
+            using var brush = new SolidBrush(Color.FromArgb(alfa, tinte));
+            g.FillRectangle(brush, 0, 0, bitmap.Width, bitmap.Height);
+            return bitmap;
         }
     }
 }

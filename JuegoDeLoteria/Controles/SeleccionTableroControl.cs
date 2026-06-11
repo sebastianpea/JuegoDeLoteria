@@ -13,13 +13,31 @@ namespace JuegoDeLoteria.Controles
         private int _cantidadTableros = 1;
         private PictureBox?[,] _celdas = new PictureBox?[4, 4];
         private Dictionary<(int, int), Carta> _cartasEnCeldas = new Dictionary<(int, int), Carta>();
+        private int _N = 4; // tamaño actual del tablero
 
         public SeleccionTableroControl()
         {
             InitializeComponent();
-            ConfigurarNud();
+        }
+        public void InicializarSeleccion()
+        {
+            int n = MainForm.Cliente.TamañoTablero;
+            int cantidad = MainForm.Cliente.CantidadTableros;
+
+            _tableroActual = 0;
+            _tablerosSeleccionados.Clear();
+            _cantidadTableros = cantidad;
+            _mazo = new MazoDeCartas();
+
+            nudCantidadTableros.Value = cantidad;
+            nudCantidadTableros.Enabled = false; // Lo define el host, no el jugador
+
             MostrarCartasDisponibles();
-            DibujarTableroVacio();
+            DibujarTableroVacio(n);
+            ActualizarInstrucciones();
+
+            btnConfirmar.Enabled = false;
+            btnAleatorio.Enabled = true;
         }
 
         private void ConfigurarNud()
@@ -50,19 +68,23 @@ namespace JuegoDeLoteria.Controles
             }
         }
 
-        private void DibujarTableroVacio()
+        private void DibujarTableroVacio(int n = 4)
         {
             pnlTablero.Controls.Clear();
-            _celdas = new PictureBox?[4, 4];
+            _celdas = new PictureBox?[n, n];
             _cartasEnCeldas.Clear();
+            _N = n;
 
-            for (int fila = 0; fila < 4; fila++)
+            int disponible = Math.Min(pnlTablero.Width, pnlTablero.Height) - 20;
+            int celdaSize = Math.Max(40, (disponible / n) - 4);
+
+            for (int fila = 0; fila < n; fila++)
             {
-                for (int col = 0; col < 4; col++)
+                for (int col = 0; col < n; col++)
                 {
                     var celda = new PictureBox();
-                    celda.Size = new Size(70, 70);
-                    celda.Location = new Point(col * 75, fila * 75);
+                    celda.Size = new Size(celdaSize, celdaSize);
+                    celda.Location = new Point(col * (celdaSize + 4), fila * (celdaSize + 4));
                     celda.SizeMode = PictureBoxSizeMode.Zoom;
                     celda.BorderStyle = BorderStyle.FixedSingle;
                     celda.BackColor = Color.White;
@@ -176,7 +198,7 @@ namespace JuegoDeLoteria.Controles
 
         private void VerificarTableroCompleto()
         {
-            btnConfirmar.Enabled = _cartasEnCeldas.Count == 16;
+            btnConfirmar.Enabled = _cartasEnCeldas.Count == _N * _N;
             ActualizarInstrucciones(_cartasEnCeldas.Count);
         }
 
@@ -187,7 +209,8 @@ namespace JuegoDeLoteria.Controles
 
         private void btnAleatorio_Click(object sender, EventArgs e)
         {
-            DibujarTableroVacio();
+            DibujarTableroVacio(_N);
+            int totalCeldas = _N * _N;
 
             foreach (Control control in flpCartasDisponibles.Controls)
             {
@@ -209,14 +232,14 @@ namespace JuegoDeLoteria.Controles
             {
                 cartasAleatorias = todasLasCartas
                     .OrderBy(c => Guid.NewGuid())
-                    .Take(16)
+                    .Take(totalCeldas)
                     .ToList();
             }
 
             int index = 0;
-            for (int fila = 0; fila < 4; fila++)
+            for (int fila = 0; fila < _N; fila++)
             {
-                for (int col = 0; col < 4; col++)
+                for (int col = 0; col < _N; col++)
                 {
                     var carta = cartasAleatorias[index++];
                     var celda = _celdas[fila, col];
@@ -256,8 +279,8 @@ namespace JuegoDeLoteria.Controles
         private async void btnConfirmar_Click(object sender, EventArgs e)
         {
             var cartas = new List<Carta>();
-            for (int fila = 0; fila < 4; fila++)
-                for (int col = 0; col < 4; col++)
+            for (int fila = 0; fila < _N; fila++)
+                for (int col = 0; col < _N; col++)
                     cartas.Add(_cartasEnCeldas[(fila, col)]);
 
             if (TableroEsIdentico(cartas))

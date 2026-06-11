@@ -39,8 +39,10 @@ namespace JuegoDeLoteria.Redes
         public event Action? OnJuegoReanudado;
         public event Action<int>? OnCambiarVelocidad;
 
-        // CORRECCIÓN: Ahora el evento transporta todos los datos que envía el Hub
         public event Action<string, bool, Dictionary<string, string>>? OnUnidoASala;
+        public int TamañoTablero { get; private set; } = 4;
+        public int CantidadTableros { get; private set; } = 1;
+        public List<bool>? PatronPersonalizado { get; private set; } = null;
 
         public ClienteDeJuego()
         {
@@ -66,11 +68,15 @@ namespace JuegoDeLoteria.Redes
             _conexion.On<string>("JugadorSalio", (id) =>
                 OnJugadorSalio?.Invoke(id));
 
-            _conexion.On<string>("JuegoIniciado", (formaDeGanar) =>
-            {
-                FormaDeGanar = formaDeGanar;
-                OnJuegoIniciado?.Invoke(formaDeGanar);
-            });
+            _conexion.On<string, int, int, List<bool>?>("JuegoIniciado",
+                (formaDeGanar, tamañoTablero, cantidadTableros, patron) =>
+                {
+                    FormaDeGanar = formaDeGanar;
+                    TamañoTablero = tamañoTablero;
+                    CantidadTableros = cantidadTableros;
+                    PatronPersonalizado = patron;
+                    OnJuegoIniciado?.Invoke(formaDeGanar);
+                });
 
             _conexion.On<int, string>("CartaMencionada", (id, nombre) =>
                 OnCartaMencionada?.Invoke(id, nombre));
@@ -113,12 +119,15 @@ namespace JuegoDeLoteria.Redes
                 OnUnidoASala?.Invoke(codigo, esHost, jugadores);
             });
 
-            _conexion.On<bool, bool>(EventosHub.ActualizarConfiguracion, (permitirDobles, esManual) =>
-            {
-                PermitirCartasDobles = permitirDobles;
-                EsManual = esManual;
-                OnActualizarConfiguracion?.Invoke(permitirDobles, esManual);
-            });
+            _conexion.On<bool, bool, int, int>(EventosHub.ActualizarConfiguracion,
+                (permitirDobles, esManual, tamañoTablero, cantidadTableros) =>
+                {
+                    PermitirCartasDobles = permitirDobles;
+                    EsManual = esManual;
+                    TamañoTablero = tamañoTablero;
+                    CantidadTableros = cantidadTableros;
+                    OnActualizarConfiguracion?.Invoke(permitirDobles, esManual);
+                });
 
             _conexion.On(EventosHub.JuegoPausado, () =>
                 OnJuegoPausado?.Invoke());
@@ -148,10 +157,12 @@ namespace JuegoDeLoteria.Redes
             await _conexion.InvokeAsync(EventosHub.UnirseASala, nombre, codigoSala);
         }
 
-        public async Task IniciarJuegoAsync(int intervaloSegundos, string formaDeGanar)
+        public async Task IniciarJuegoAsync(int intervaloSegundos, string formaDeGanar,
+            int tamañoTablero, int cantidadTableros, List<bool>? patronPersonalizado)
         {
             IntervaloSegundos = intervaloSegundos;
-            await _conexion.InvokeAsync("IniciarJuego", CodigoSala, intervaloSegundos, formaDeGanar);
+            await _conexion.InvokeAsync("IniciarJuego", CodigoSala, intervaloSegundos,
+                formaDeGanar, tamañoTablero, cantidadTableros, patronPersonalizado);
         }
 
         public async Task JugadorListoAsync()
@@ -195,9 +206,11 @@ namespace JuegoDeLoteria.Redes
             await _conexion.InvokeAsync(EventosHub.ActualizarConfiguracion, CodigoSala, permitirCartasDobles);
         }
 
-        public async Task ActualizarConfiguracionAsync(bool permitirCartasDobles, bool esManual)
+        public async Task ActualizarConfiguracionAsync(bool permitirCartasDobles, bool esManual,
+            int tamañoTablero, int cantidadTableros)
         {
-            await _conexion.InvokeAsync(EventosHub.ActualizarConfiguracion, CodigoSala, permitirCartasDobles, esManual);
+            await _conexion.InvokeAsync(EventosHub.ActualizarConfiguracion,
+                CodigoSala, permitirCartasDobles, esManual, tamañoTablero, cantidadTableros);
         }
 
         public async Task PausarJuegoAsync()

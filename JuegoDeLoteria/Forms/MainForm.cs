@@ -63,23 +63,40 @@ namespace JuegoDeLoteria.Forms
             { 
                 MostrarControl(lobbyControl); 
                 lobbyControl.InicializarLobby(); 
-            }; 
+            };
             lobbyControl.OnJuegoIniciado += () =>
-            { 
-                this.BeginInvoke(new Action(() => MostrarControl(seleccionTableroControl))); 
-            }; 
-            seleccionTableroControl.OnTablerosSeleccionados += (tableros) => 
-            { 
-                this.BeginInvoke(new Action(() => 
-                { 
+            {
+                this.BeginInvoke(new Action(() =>
+                {
+                    seleccionTableroControl.InicializarSeleccion();
+                    MostrarControl(seleccionTableroControl);
+                }));
+            };
+            seleccionTableroControl.OnTablerosSeleccionados += (tableros) =>
+            {
+                this.BeginInvoke(new Action(() =>
+                {
                     MostrarControl(juegoControl);
 
-                    juegoControl.InicializarJuego( 
-                        tableros, 
-                        MainForm.Cliente.IntervaloSegundos, 
-                        Enum.Parse<FormasdeGanar>(MainForm.Cliente.FormaDeGanar));
-                })); 
-            }; 
+                    FormasdeGanar forma = FormasdeGanar.TableroCompleto;
+                    List<bool>? patron = null;
+
+                    if (MainForm.Cliente.FormaDeGanar == "Personalizado")
+                    {
+                        patron = MainForm.Cliente.PatronPersonalizado;
+                    }
+                    else
+                    {
+                        forma = Enum.Parse<FormasdeGanar>(MainForm.Cliente.FormaDeGanar);
+                    }
+
+                    juegoControl.InicializarJuego(
+                        tableros,
+                        MainForm.Cliente.IntervaloSegundos,
+                        forma,
+                        patron);
+                }));
+            };
             juegoControl.OnJuegoTerminado += (ganador) => 
             { 
                 this.BeginInvoke(new Action(() => 

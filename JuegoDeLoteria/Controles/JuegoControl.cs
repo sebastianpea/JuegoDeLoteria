@@ -13,32 +13,43 @@ namespace JuegoDeLoteria.Controles
         private int segundosRestantes; 
         private int intervaloSegundos; 
         public bool EsHost { get; set; } 
-        public event Action<string>? OnJuegoTerminado; 
+        public event Action<string>? OnJuegoTerminado;
+        private List<bool>? _patronPersonalizado = null;
+        private List<(int id, string nombre)> _historialCartas = new List<(int, string)>();
+        private int _indiceHistorial = -1;
 
         public JuegoControl()
         {
             InitializeComponent();
             this.BackColor = Color.Black; 
         }
-        public void InicializarJuego(List<Tablero> tableros, int intervaloSegundos, FormasdeGanar formaSeleccionada)
+        public void InicializarJuego(List<Tablero> tableros, int intervaloSegundos,
+            FormasdeGanar formaSeleccionada, List<bool>? patronPersonalizado = null)
         {
             if (this.InvokeRequired)
             {
-                this.Invoke(() => InicializarJuego(tableros, intervaloSegundos, formaSeleccionada));
+                this.Invoke(() => InicializarJuego(tableros, intervaloSegundos,
+                    formaSeleccionada, patronPersonalizado));
                 return;
             }
             if (tableros == null)
             {
-                MessageBox.Show("Error: No se recibieron los tableros para iniciar el juego.", "Error de Inicialización", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error: No se recibieron los tableros.");
                 return;
             }
             DesregistrarEventosSignalR();
 
             MainForm.Cliente.OnDesempateIniciado += OnDesempateIniciado;
 
-            this.tableros = tableros; 
-            this.intervaloSegundos = intervaloSegundos; 
-            this.formaDeGanar = formaSeleccionada; 
+            this.tableros = tableros;
+            this.intervaloSegundos = intervaloSegundos;
+            this.formaDeGanar = formaSeleccionada;
+            this._patronPersonalizado = patronPersonalizado;
+
+            _historialCartas.Clear();
+            _indiceHistorial = -1;
+            btnRetroceder.Enabled = false;
+            btnAdelantar.Enabled = false;
 
             pnlTableros.Controls.Clear(); 
             flpHistorial.Controls.Clear(); 
@@ -129,34 +140,45 @@ namespace JuegoDeLoteria.Controles
 
         private void OnCartaMencionada(int id, string nombre)
         {
-            this.Invoke(() =>
+            this.Invoke((Delegate)(() =>
             {
-                var mazo = new MazoDeCartas(); 
-                var carta = mazo.ObtenerTodasLasCartas().FirstOrDefault(c => c.Id == id); 
+                var mazo = new MazoDeCartas();
+                var carta = mazo.ObtenerTodasLasCartas().FirstOrDefault(c => c.Id == id);
 
                 if (carta != null)
                 {
-                    pbCartaActual.Image = carta.ObtenerImagen(); 
-                    lblNombreCartaActual.Text = carta.Nombre; 
+                    // Guardar en historial
+                    _historialCartas.Add((id, carta.Nombre));
+                    _indiceHistorial = _historialCartas.Count - 1;
+                    btnRetroceder.Enabled = _historialCartas.Count > 1;
+                    btnAdelantar.Enabled = false;
 
-                    AudioManager.HablarCarta(carta.Nombre); 
+                    MostrarCartaEnPantalla(carta);
+                    AudioManager.HablarCarta(carta.Nombre);
 
-                    var pbHistorial = new PictureBox(); 
-                    pbHistorial.Size = new Size(50, 50); 
-                    pbHistorial.SizeMode = PictureBoxSizeMode.Zoom; 
+                    var pbHistorial = new PictureBox();
+                    pbHistorial.Size = new Size(50, 50);
+                    pbHistorial.SizeMode = PictureBoxSizeMode.Zoom;
                     pbHistorial.Image = carta.ObtenerImagen();
-                    flpHistorial.Controls.Add(pbHistorial); 
+                    flpHistorial.Controls.Add(pbHistorial);
                 }
 
                 foreach (Control c in pnlTableros.Controls)
                     if (c is TableroControl tableroControl)
-                        tableroControl.MarcarCartaMencionada(id); 
+                        tableroControl.MarcarCartaMencionada(id);
 
-                segundosRestantes = intervaloSegundos; 
-                cuentaRegresiva.Stop(); 
-                cuentaRegresiva.Start(); 
-                lblCuentaRegresiva.Text = $"Próxima carta en: {segundosRestantes}s"; 
-            });
+                segundosRestantes = intervaloSegundos;
+                cuentaRegresiva.Stop();
+                cuentaRegresiva.Start();
+                lblCuentaRegresiva.Text = $"Próxima carta en: {segundosRestantes}s";
+            }));
+        }
+
+        private void MostrarCartaEnPantalla(Carta carta)
+        {
+            var mazo = new MazoDeCartas(); // solo para obtener imagen si no la tenemos
+            pbCartaActual.Image = carta.ObtenerImagen();
+            lblNombreCartaActual.Text = carta.Nombre;
         }
 
         private async void btnLoteria_Click(object sender, EventArgs e)
@@ -169,58 +191,80 @@ namespace JuegoDeLoteria.Controles
         {
             this.Invoke(async () =>
             {
+                // Primero guardamos snapshot del marcado ANTES de VerificarVictoria
+                // porque ese método limpia Marcado internamente
+                var snapshots = tableros.Select(t =>
+                {
+                    var snap = new bool[t.Tamaño, t.Tamaño];
+                    Array.Copy(t.Marcado, snap, t.Marcado.Length);
+                    return snap;
+                }).ToList();
+
                 bool esValido = tableros.Any(t =>
                 {
-                    t.VerificarVictoria(cartasMencionadas, this.formaDeGanar);
-                    return t.RevisarVictoria(this.formaDeGanar);
+                    t.VerificarVictoria(cartasMencionadas, this.formaDeGanar, _patronPersonalizado);
+                    return _patronPersonalizado != null
+                        ? t.RevisarPatronPersonalizado(_patronPersonalizado)
+                        : t.RevisarVictoria(this.formaDeGanar);
                 });
 
                 if (!esValido)
                 {
-                    foreach (var tablero in tableros)
+                    // Obtener los TableroControl en el mismo orden que la lista tableros
+                    var tablerosControl = pnlTableros.Controls
+                        .OfType<TableroControl>()
+                        .ToList();
+
+                    for (int t = 0; t < tableros.Count && t < tablerosControl.Count; t++)
                     {
-                        for (int f = 0; f < 4; f++)
+                        var tablero = tableros[t];
+                        var snap = snapshots[t];
+                        var tc = tablerosControl[t];
+
+                        for (int f = 0; f < tablero.Tamaño; f++)
                         {
-                            for (int c = 0; c < 4; c++)
+                            for (int c = 0; c < tablero.Tamaño; c++)
                             {
-                                if (tablero.Marcado[f, c] &&
-                                    !cartasMencionadas.Contains(tablero.Cartas[f * 4 + c].Id)) 
+                                // Usar snapshot: estaba marcado Y la carta no se ha llamado
+                                if (snap[f, c] &&
+                                    !cartasMencionadas.Contains(tablero.Cartas[f * tablero.Tamaño + c].Id))
                                 {
-                                    foreach (Control ctrl in pnlTableros.Controls)
-                                    {
-                                        if (ctrl is TableroControl tc)
-                                            tc.MarcarCeldaInvalida(f, c);
-                                    }
+                                    tc.MarcarCeldaInvalida(f, c);
                                 }
                             }
                         }
                     }
 
-                    string cartasInvalidas = ObtenerNombresCartasInvalidas(cartasMencionadas); 
-                    MessageBox.Show($"Tu Lotería no es válida.\n\nCartas marcadas que aún no se han llamado:\n{cartasInvalidas}"); 
-                    btnLoteria.Enabled = true; 
+                    string cartasInvalidas = ObtenerNombresCartasInvalidas(cartasMencionadas, snapshots);
+                    MessageBox.Show(
+                        $" Tu Lotería no es válida.\n\nCartas marcadas que aún no se han llamado:\n{cartasInvalidas}\n\n(Marcadas en rojo en tu tablero)",
+                        "Lotería inválida",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+
+                    btnLoteria.Enabled = true;
                 }
 
                 await MainForm.Cliente.EnviarResultadoAsync(esValido);
             });
         }
 
-        private string ObtenerNombresCartasInvalidas(List<int> cartasMencionadas)
+        private string ObtenerNombresCartasInvalidas(List<int> cartasMencionadas, List<bool[,]> snapshots)
         {
-            var nombres = new List<string>(); 
-            foreach (var tablero in tableros)
+            var nombres = new List<string>();
+            for (int t = 0; t < tableros.Count; t++)
             {
-                for (int f = 0; f < 4; f++)
-                {
-                    for (int c = 0; c < 4; c++)
+                var tablero = tableros[t];
+                var snap = snapshots[t];
+                for (int f = 0; f < tablero.Tamaño; f++)
+                    for (int c = 0; c < tablero.Tamaño; c++)
                     {
-                        var carta = tablero.Cartas[f * 4 + c];
-                        if (tablero.Marcado[f, c] && !cartasMencionadas.Contains(carta.Id)) 
-                            nombres.Add(carta.Nombre); 
+                        var carta = tablero.Cartas[f * tablero.Tamaño + c];
+                        if (snap[f, c] && !cartasMencionadas.Contains(carta.Id))
+                            nombres.Add(carta.Nombre);
                     }
-                }
             }
-            return string.Join("\n", nombres.Distinct()); 
+            return string.Join("\n", nombres.Distinct());
         }
 
         private void OnJuegoTerminado_Recibido(string ganador, Dictionary<string, int> puntajes)
@@ -312,6 +356,35 @@ namespace JuegoDeLoteria.Controles
                 MessageBox.Show($"¡Empate entre: {jugadores}!\nSe seguirán dando cartas para desempatar."); 
                 btnLoteria.Enabled = true; 
             });
+        }
+        private void btnRetroceder_Click(object sender, EventArgs e)
+        {
+            if (_indiceHistorial <= 0) return;
+            _indiceHistorial--;
+            MostrarCartaDelHistorial(_indiceHistorial);
+            btnAdelantar.Enabled = true;
+            btnRetroceder.Enabled = _indiceHistorial > 0;
+        }
+
+        private void btnAdelantar_Click(object sender, EventArgs e)
+        {
+            if (_indiceHistorial >= _historialCartas.Count - 1) return;
+            _indiceHistorial++;
+            MostrarCartaDelHistorial(_indiceHistorial);
+            btnRetroceder.Enabled = true;
+            btnAdelantar.Enabled = _indiceHistorial < _historialCartas.Count - 1;
+        }
+
+        private void MostrarCartaDelHistorial(int indice)
+        {
+            var (id, nombre) = _historialCartas[indice];
+            var mazo = new MazoDeCartas();
+            var carta = mazo.ObtenerTodasLasCartas().FirstOrDefault(c => c.Id == id);
+            if (carta != null)
+            {
+                pbCartaActual.Image = carta.ObtenerImagen();
+                lblNombreCartaActual.Text = $"[{indice + 1}/{_historialCartas.Count}] {carta.Nombre}";
+            }
         }
     }
 }

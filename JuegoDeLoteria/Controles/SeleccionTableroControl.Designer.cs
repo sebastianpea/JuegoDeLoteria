@@ -55,7 +55,7 @@
             btnAleatorio.BackColor = Color.Black;
             btnAleatorio.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnAleatorio.ForeColor = Color.White;
-            btnAleatorio.Location = new Point(285, 820);
+            btnAleatorio.Location = new Point(1248, 919);
             btnAleatorio.Name = "btnAleatorio";
             btnAleatorio.Size = new Size(163, 52);
             btnAleatorio.TabIndex = 1;
@@ -68,7 +68,7 @@
             btnConfirmar.BackColor = Color.Black;
             btnConfirmar.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnConfirmar.ForeColor = Color.White;
-            btnConfirmar.Location = new Point(466, 820);
+            btnConfirmar.Location = new Point(1429, 919);
             btnConfirmar.Name = "btnConfirmar";
             btnConfirmar.Size = new Size(163, 52);
             btnConfirmar.TabIndex = 0;
@@ -81,7 +81,7 @@
             lblInstrucciones.AutoSize = true;
             lblInstrucciones.Font = new Font("Determination Mono Web", 24F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblInstrucciones.ForeColor = Color.White;
-            lblInstrucciones.Location = new Point(15, 54);
+            lblInstrucciones.Location = new Point(26, 32);
             lblInstrucciones.Name = "lblInstrucciones";
             lblInstrucciones.Size = new Size(278, 41);
             lblInstrucciones.TabIndex = 4;
@@ -89,9 +89,10 @@
             // 
             // pnlTablero
             // 
-            pnlTablero.Location = new Point(487, 120);
+            pnlTablero.AutoScroll = true;
+            pnlTablero.Location = new Point(25, 248);
             pnlTablero.Name = "pnlTablero";
-            pnlTablero.Size = new Size(404, 598);
+            pnlTablero.Size = new Size(888, 781);
             pnlTablero.TabIndex = 5;
             // 
             // flpCartasDisponibles
@@ -105,9 +106,9 @@
             // 
             label1.Font = new Font("Determination Mono Web", 19.8000011F, FontStyle.Regular, GraphicsUnit.Point, 0);
             label1.ForeColor = Color.White;
-            label1.Location = new Point(15, 144);
+            label1.Location = new Point(25, 86);
             label1.Name = "label1";
-            label1.Size = new Size(287, 371);
+            label1.Size = new Size(888, 113);
             label1.TabIndex = 6;
             label1.Text = "Selecciona las cartas que deseas en tu tablero, así como la cantidad de Tableros que desees, cuando acabes selecciona Confirmar\r\n";
             // 
@@ -116,7 +117,7 @@
             btnCargarTablero.BackColor = Color.Black;
             btnCargarTablero.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnCargarTablero.ForeColor = Color.White;
-            btnCargarTablero.Location = new Point(25, 518);
+            btnCargarTablero.Location = new Point(1465, 21);
             btnCargarTablero.Name = "btnCargarTablero";
             btnCargarTablero.Size = new Size(163, 52);
             btnCargarTablero.TabIndex = 7;
@@ -129,7 +130,7 @@
             btnGuardarTablero.BackColor = Color.Black;
             btnGuardarTablero.Font = new Font("Determination Mono Web", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnGuardarTablero.ForeColor = Color.White;
-            btnGuardarTablero.Location = new Point(25, 586);
+            btnGuardarTablero.Location = new Point(1642, 21);
             btnGuardarTablero.Name = "btnGuardarTablero";
             btnGuardarTablero.Size = new Size(163, 52);
             btnGuardarTablero.TabIndex = 8;

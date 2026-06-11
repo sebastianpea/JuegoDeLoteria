@@ -39,6 +39,8 @@
             btnMasFast = new Button();
             btnMasSlow = new Button();
             btnSiguienteCarta = new Button();
+            btnRetroceder = new Button();
+            btnAdelantar = new Button();
             ((System.ComponentModel.ISupportInitialize)pbCartaActual).BeginInit();
             SuspendLayout();
             // 
@@ -168,11 +170,39 @@
             btnSiguienteCarta.UseVisualStyleBackColor = false;
             btnSiguienteCarta.Click += btnSiguienteCarta_Click;
             // 
+            // btnRetroceder
+            // 
+            btnRetroceder.BackColor = Color.Black;
+            btnRetroceder.Font = new Font("Determination Mono Web", 16.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnRetroceder.ForeColor = Color.White;
+            btnRetroceder.Location = new Point(44, 387);
+            btnRetroceder.Name = "btnRetroceder";
+            btnRetroceder.Size = new Size(167, 46);
+            btnRetroceder.TabIndex = 10;
+            btnRetroceder.Text = "Retroceder";
+            btnRetroceder.UseVisualStyleBackColor = false;
+            btnRetroceder.Click += btnRetroceder_Click;
+            // 
+            // btnAdelantar
+            // 
+            btnAdelantar.BackColor = Color.Black;
+            btnAdelantar.Font = new Font("Determination Mono Web", 16.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnAdelantar.ForeColor = Color.White;
+            btnAdelantar.Location = new Point(235, 387);
+            btnAdelantar.Name = "btnAdelantar";
+            btnAdelantar.Size = new Size(152, 46);
+            btnAdelantar.TabIndex = 11;
+            btnAdelantar.Text = "Adelantar";
+            btnAdelantar.UseVisualStyleBackColor = false;
+            btnAdelantar.Click += btnAdelantar_Click;
+            // 
             // JuegoControl
             // 
             AutoScaleDimensions = new SizeF(120F, 120F);
             AutoScaleMode = AutoScaleMode.Dpi;
             BackColor = Color.Black;
+            Controls.Add(btnAdelantar);
+            Controls.Add(btnRetroceder);
             Controls.Add(btnSiguienteCarta);
             Controls.Add(btnMasSlow);
             Controls.Add(btnMasFast);
@@ -205,5 +235,7 @@
         private Button btnMasFast;
         private Button btnMasSlow;
         private Button btnSiguienteCarta;
+        private Button btnRetroceder;
+        private Button btnAdelantar;
     }
 }

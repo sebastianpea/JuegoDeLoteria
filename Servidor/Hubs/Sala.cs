@@ -19,6 +19,9 @@ namespace Servidor.Hubs
         public bool EnDesempate { get; set; }
         public Dictionary<string, List<int>> TablerosJugadores { get; set; } = new();
         public Dictionary<string, int> Puntajes { get; set; } = new();
+        public int TamañoTablero { get; set; } = 4;
+        public int CantidadTableros { get; set; } = 1;
+        public List<bool>? PatronPersonalizado { get; set; } = null; 
 
         public Sala(string codigo, string hostId)
         {

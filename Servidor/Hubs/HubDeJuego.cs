@@ -92,10 +92,12 @@ namespace Servidor.Hubs
             await Clients.Caller.SendAsync("RecibirUnidoConExito");
         }
 
-        public async Task IniciarJuego(string codigoSala, int intervaloSegundos, string formaDeGanar)
+        public async Task IniciarJuego(string codigoSala, int intervaloSegundos, string formaDeGanar,
+            int tamañoTablero, int cantidadTableros, List<bool>? patronPersonalizado)
         {
             if (!salas.ContainsKey(codigoSala)) return;
             Sala sala = salas[codigoSala];
+
             if (sala.HostId != Context.ConnectionId)
             {
                 await Clients.Caller.SendAsync(EventosHub.Error, "Solo el host puede iniciar el juego.");
@@ -106,9 +108,13 @@ namespace Servidor.Hubs
             sala.CartasMencionadas.Clear();
             sala.JugadoresListos.Clear();
             sala.IntervaloSegundos = intervaloSegundos;
+            sala.TamañoTablero = tamañoTablero;
+            sala.CantidadTableros = cantidadTableros;
+            sala.PatronPersonalizado = patronPersonalizado;
             sala.Mazo.Barajar();
 
-            await Clients.Group(codigoSala).SendAsync(EventosHub.JuegoIniciado, formaDeGanar);
+            await Clients.Group(codigoSala).SendAsync(EventosHub.JuegoIniciado,
+                formaDeGanar, tamañoTablero, cantidadTableros, patronPersonalizado);
         }
 
         public async Task JugadorListo(string codigoSala)
@@ -230,18 +236,20 @@ namespace Servidor.Hubs
                 .SendAsync(EventosHub.MensajeRecibido, nombre, mensaje);
         }
 
-        public async Task ActualizarConfiguracion(string codigoSala, bool permitirCartasDobles, bool esManual)
+        public async Task ActualizarConfiguracion(string codigoSala, bool permitirCartasDobles,
+            bool esManual, int tamañoTablero, int cantidadTableros)
         {
             if (!salas.ContainsKey(codigoSala)) return;
-
             Sala sala = salas[codigoSala];
             if (sala.HostId != Context.ConnectionId) return;
 
             sala.PermitirCartasDobles = permitirCartasDobles;
             sala.EsManual = esManual;
+            sala.TamañoTablero = tamañoTablero;
+            sala.CantidadTableros = cantidadTableros;
 
-            await Clients.Group(codigoSala)
-                .SendAsync(EventosHub.ActualizarConfiguracion, permitirCartasDobles, esManual);
+            await Clients.Group(codigoSala).SendAsync(EventosHub.ActualizarConfiguracion,
+                permitirCartasDobles, esManual, tamañoTablero, cantidadTableros);
         }
 
         public async Task PausarJuego(string codigoSala)
